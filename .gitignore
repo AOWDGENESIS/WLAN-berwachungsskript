@@ -1,0 +1,11 @@
+artifacts/
+build/
+cache/
+*.log
+*.tmp
+*.bak
+.env
+.env.*
+config/*.local.json
+artifacts/
+build/

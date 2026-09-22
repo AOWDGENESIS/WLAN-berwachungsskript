@@ -1,24 +1,14 @@
-# Installer
+# WLAN Guardian
 
-Zwei Ebenen:
+Local Windows WLAN monitoring core.
 
-1. Bootstrapper
-   - erkennt fehlende Komponenten
-   - laesst Installationspfade waehlen
-   - laedt offizielle Pakete
-   - prueft Hash/Signatur
-   - installiert
-   - validiert
-   - rollt bei Fehlern zurueck
+The application performs local connectivity and WLAN state checks.
+Packet capture and router management are disabled by default.
 
-2. Guardian Installer
-   - Service
-   - UI/Tray
-   - Datenbankmigration
-   - Firewall-Regeln
-   - Repair
-   - Uninstall
+Run once:
 
-Wireshark/Npcap:
-Offiziellen Wireshark Windows Installer verwenden. Dieser enthaelt Npcap
-fuer Live Capture. Keine eigene Npcap-Weiterverteilung.
+    .\Start-Guardian.ps1 -Once
+
+Run continuously:
+
+    .\Start-Guardian.ps1
