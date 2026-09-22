@@ -1,0 +1,160 @@
+{
+  "generated_utc": "2026-09-22T17:06:32.916912+00:00",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "1f2ba7af4e2dcf8bde91d3a28d6d5dd2d2e36c66ba52e8a392c019f9128c3c7c",
+      "bytes": 801
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "6e8d3a6e57f9cc561fb357e1d62bf6d19ab2aa3a11860f59694a55f99df71f85",
+      "bytes": 389
+    },
+    {
+      "path": "android/Guardian.Admin/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "artifacts/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "build/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "cache/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "config/release-manifest.example.json",
+      "sha256": "8ea96738202c6b11a144772102586965d3a157e39d68fb639c8c5aa2180465f5",
+      "bytes": 801
+    },
+    {
+      "path": "docs/COMPONENT-MATRIX.md",
+      "sha256": "bdcf7101f631d025da82be0af1a57c9affe26641af72a646955cf71774b85ffa",
+      "bytes": 992
+    },
+    {
+      "path": "docs/DISTRIBUTION-POLICY.md",
+      "sha256": "8724830001ceedf334fcf1da7f3eebd25638b52491b0cbf482fe8fcbb23c98f7",
+      "bytes": 641
+    },
+    {
+      "path": "docs/INSTALL-FLOW.md",
+      "sha256": "7a6ee4480a388bca70e1dced43923a7417ae4dc78c5c44e6564711f107cbb49b",
+      "bytes": 632
+    },
+    {
+      "path": "docs/OFFICIAL-SOURCES.md",
+      "sha256": "3bfbb161a7d4fbb74702f3ca327972f50584f000469d973f96dbb4e09d32d592",
+      "bytes": 655
+    },
+    {
+      "path": "docs/TEST-LOOP.md",
+      "sha256": "462a143ddecb768c5f2043f08195a9d3a1c243f1e1eb0ceabb44948b122791eb",
+      "bytes": 474
+    },
+    {
+      "path": "installer/README.md",
+      "sha256": "8b1a58346865992178b6dba0a465b5fab193b1a8c64acfe587dee936343a1f74",
+      "bytes": 502
+    },
+    {
+      "path": "lab/hyperv/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lab/reports/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lab/sandbox/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lab/scenarios/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "lab/test-data/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Capture/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Core/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Devices/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Evidence/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.FritzBox/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Network/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Security/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Service/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.Tray/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "src/Guardian.UI/.gitkeep",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "tests/Release-Gate.ps1",
+      "sha256": "1e09c4fe3f4b3a35e2e95003b13de4f88cf1b12956dcec6f3d27859015af6639",
+      "bytes": 333
+    },
+    {
+      "path": "tools/Install-Dependencies.ps1",
+      "sha256": "0fbc05d6700bc18434d9868f86865a38df2f1fa55bb90b4a461c3c6455da1f52",
+      "bytes": 723
+    },
+    {
+      "path": "tools/Verify-Release.ps1",
+      "sha256": "c019e53d495362233bcb218f1dae4a4974768ac2ad76489c81184675dc9125cb",
+      "bytes": 705
+    }
+  ]
+}

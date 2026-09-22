@@ -1,0 +1,34 @@
+{
+  "project": "GENESIS FRITZ!BOX GUARDIAN",
+  "channel": "release",
+  "policy": "official_sources_only",
+  "components": [
+    {
+      "name": "Wireshark",
+      "source": "https://www.wireshark.org/download/win64/",
+      "required": false,
+      "path_mode": "user_selected"
+    },
+    {
+      "name": "Npcap",
+      "source": "https://npcap.com/",
+      "required": false,
+      "path_mode": "via_official_wireshark_installer"
+    },
+    {
+      "name": ".NET SDK",
+      "source": "https://dotnet.microsoft.com/download",
+      "required": true
+    },
+    {
+      "name": "Android Studio",
+      "source": "https://developer.android.com/studio",
+      "required": false
+    },
+    {
+      "name": "Inno Setup",
+      "source": "https://jrsoftware.org/isdl.php",
+      "required": true
+    }
+  ]
+}
