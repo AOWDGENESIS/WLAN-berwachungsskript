@@ -1,0 +1,16 @@
+name: build
+on: [push, pull_request]
+
+jobs:
+  powershell:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Release gate
+        shell: pwsh
+        run: ./tests/Release-Gate.ps1
+
+      - name: Package
+        shell: pwsh
+        run: ./tools/Build-Release.ps1 -SkipInstaller
