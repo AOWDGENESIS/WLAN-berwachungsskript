@@ -8,7 +8,8 @@ AppId={{B0D7B00D-4D4A-4C73-9D28-6A9F5EFC0A01}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
-DefaultDirName={autopf}\WLAN Guardian
+; Per-user installation: works with PrivilegesRequired=lowest.
+DefaultDirName={localappdata}\Programs\WLAN Guardian
 DefaultGroupName={#MyAppName}
 OutputDir=..\build
 OutputBaseFilename=WLAN-Guardian-Setup-{#MyAppVersion}
@@ -34,7 +35,8 @@ Name: "{app}\artifacts"
 [Icons]
 Name: "{group}\WLAN Guardian"; Filename: "{app}\WLAN-Guardian.cmd"; WorkingDir: "{app}"
 Name: "{group}\WLAN Guardian (einmalig)"; Filename: "{app}\WLAN-Guardian.cmd"; Parameters: "-Once"; WorkingDir: "{app}"
-Name: "{commondesktop}\WLAN Guardian"; Filename: "{app}\WLAN-Guardian.cmd"; WorkingDir: "{app}"; Tasks: desktopicon
+; Use the current user's desktop, not the public desktop. This avoids 0x80070005 with a non-admin install.
+Name: "{userdesktop}\WLAN Guardian"; Filename: "{app}\WLAN-Guardian.cmd"; WorkingDir: "{app}"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Desktop-Verknüpfung erstellen"; GroupDescription: "Zusätzliche Verknüpfungen:"
