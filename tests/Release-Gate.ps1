@@ -20,7 +20,8 @@ $config = Get-Content (Join-Path $root "config\guardian.example.json") -Raw | Co
 if ([int]$config.intervalSeconds -lt 1) { throw "Invalid intervalSeconds" }
 if ([string]::IsNullOrWhiteSpace([string]$config.logDirectory)) { throw "Invalid logDirectory" }
 
-$scripts = Get-ChildItem -LiteralPath $root -Recurse -File -Include *.ps1,*.psm1
+$scripts = Get-ChildItem -LiteralPath $root -Recurse -File |
+    Where-Object { $_.Extension -in @(".ps1", ".psm1") }
 foreach ($script in $scripts) {
     $tokens = $null
     $errors = $null
