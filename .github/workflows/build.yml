@@ -11,6 +11,10 @@ jobs:
         shell: pwsh
         run: ./tests/Release-Gate.ps1
 
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --no-progress --yes
+
       - name: Package
         shell: pwsh
-        run: ./tools/Build-Release.ps1 -SkipInstaller
+        run: ./tools/Build-Release.ps1 -RequireInstaller

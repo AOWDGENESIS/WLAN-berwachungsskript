@@ -32,3 +32,31 @@ Einmaliger Lauf:
 
 ```powershell
 .\Start-Guardian.ps1 -Once
+```
+
+Kontinuierliche Überwachung:
+
+```powershell
+.\Start-Guardian.ps1
+```
+
+## Windows-Release bauen
+
+Der reproduzierbare Build erzeugt ein ZIP und mit Inno Setup zusätzlich eine
+Installations-EXE:
+
+```powershell
+.\tests\Release-Gate.ps1
+.\tools\Build-Release.ps1 -Version 1.0.0 -RequireInstaller
+```
+
+Wenn `ISCC.exe` nicht im PATH oder in `Program Files\Inno Setup 6` liegt,
+kann der Pfad explizit angegeben werden:
+
+```powershell
+.\tools\Build-Release.ps1 -Version 1.0.0 -RequireInstaller `
+    -InnoSetupPath "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+```
+
+Die Artefakte liegen anschließend unter `build\`:
+`WLAN-Guardian-1.0.0.zip` und `WLAN-Guardian-Setup-1.0.0.exe`.

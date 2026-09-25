@@ -1,19 +1,33 @@
 param(
     [switch]$Once,
-    [string]$ConfigPath = ".\config\guardian.example.json"
+    [string]$ConfigPath = ""
 )
 
 $ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
 
-if (-not (Test-Path $ConfigPath -PathType Leaf)) {
+$scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+if ([string]::IsNullOrWhiteSpace($ConfigPath)) {
+    $ConfigPath = Join-Path (Split-Path -Parent $scriptRoot) "config\guardian.example.json"
+} elseif (-not [System.IO.Path]::IsPathRooted($ConfigPath)) {
+    $ConfigPath = Join-Path (Split-Path -Parent $scriptRoot) $ConfigPath
+}
+
+if (-not (Test-Path -LiteralPath $ConfigPath -PathType Leaf)) {
     throw "Configuration not found: $ConfigPath"
 }
 
-$config = Get-Content $ConfigPath -Raw | ConvertFrom-Json
+$config = Get-Content -LiteralPath $ConfigPath -Raw | ConvertFrom-Json
+if ($null -eq $config.intervalSeconds -or [int]$config.intervalSeconds -lt 1) {
+    throw "Configuration intervalSeconds must be greater than zero."
+}
+if ([string]::IsNullOrWhiteSpace([string]$config.logDirectory)) {
+    throw "Configuration logDirectory is required."
+}
 
 $logDirectory = [string]$config.logDirectory
 if (-not [System.IO.Path]::IsPathRooted($logDirectory)) {
-    $logDirectory = Join-Path (Get-Location).Path $logDirectory
+    $logDirectory = Join-Path (Split-Path -Parent $scriptRoot) $logDirectory
 }
 
 New-Item -ItemType Directory -Path $logDirectory -Force | Out-Null

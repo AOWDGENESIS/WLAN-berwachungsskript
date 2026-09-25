@@ -15,8 +15,8 @@ if (-not (Test-Path -LiteralPath $guardian -PathType Leaf)) {
 if ([string]::IsNullOrWhiteSpace($ConfigPath)) {
     $ConfigPath = Join-Path $root "config\guardian.example.json"
 } elseif (-not [IO.Path]::IsPathRooted($ConfigPath)) {
-    $ConfigPath = Join-Path (Get-Location).Path $ConfigPath
+    $ConfigPath = Join-Path $root $ConfigPath
 }
 
 & $guardian -Once:$Once -ConfigPath $ConfigPath
-exit $LASTEXITCODE
+exit ([int]$LASTEXITCODE)

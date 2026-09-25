@@ -9,7 +9,15 @@ if ([string]::IsNullOrWhiteSpace($ReleaseRoot)) { $ReleaseRoot = Join-Path $proj
 $release = [IO.Path]::GetFullPath($ReleaseRoot)
 if (-not (Test-Path -LiteralPath $release -PathType Container)) { throw "Release root not found: $release" }
 
-$required = @("Start-Guardian.ps1", "WLAN-Guardian.cmd", "README.md", "LICENSE", "src\Guardian.ps1", "config\guardian.example.json")
+$required = @(
+    "Start-Guardian.ps1",
+    "WLAN-Guardian.cmd",
+    "README.md",
+    "LICENSE",
+    "src\Guardian.ps1",
+    "src\Guardian.UI\Guardian.UI.ps1",
+    "config\guardian.example.json"
+)
 foreach ($relative in $required) {
     $path = Join-Path $release $relative
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required release file missing: $relative" }
@@ -18,6 +26,7 @@ foreach ($relative in $required) {
 $config = Get-Content (Join-Path $release "config\guardian.example.json") -Raw | ConvertFrom-Json
 if ([int]$config.version -lt 1) { throw "Unsupported configuration version" }
 if ([int]$config.intervalSeconds -lt 1) { throw "intervalSeconds must be positive" }
+if ([string]::IsNullOrWhiteSpace([string]$config.logDirectory)) { throw "logDirectory is required" }
 
 $ps = Get-Command powershell.exe -ErrorAction SilentlyContinue
 if ($null -eq $ps) { throw "Windows PowerShell is required" }

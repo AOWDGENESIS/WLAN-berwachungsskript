@@ -26,7 +26,7 @@ Source: "..\Start-Guardian.ps1"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\WLAN-Guardian.cmd"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\README.md"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\src\*.ps1"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\src\*"; DestDir: "{app}\src"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "..\config\guardian.example.json"; DestDir: "{app}\config"; Flags: ignoreversion
 
 [Dirs]
