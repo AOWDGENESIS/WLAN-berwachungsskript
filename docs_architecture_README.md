@@ -1,10 +1,17 @@
 # Architecture
 
-Guardian is designed as a modular local monitoring system. The system is separated into core runtime, FRITZ!Box integration, network and device telemetry, evidence recording, security control, and optional capture.
+WLAN Guardian follows a modular PowerShell architecture:
 
-Important rules:
-
-- Untrusted or unknown devices are represented as `unknown`, not as attackers.
-- FRITZ!Box outages must result in `FRITZBOX_OFFLINE` or `DEGRADED` state, never a green safe state.
-- Capture is opt-in and disabled by default.
-- Evidence is hash-linked and audit-friendly.
+```
+Guardian
+├── Core (State, Config, Health)
+├── Devices (Discovery, Identification)
+├── Network (Adapter, DNS, Gateway)
+├── FritzBox (TR-064 Interface)
+├── Service (Background Service)
+├── UI (Desktop GUI)
+├── Tray (System Tray Agent)
+├── Evidence (Chain of Custody)
+├── Security (Auth, Audit)
+└── Capture (Packet Analysis - optional)
+```
