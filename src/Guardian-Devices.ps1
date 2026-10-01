@@ -134,6 +134,7 @@ if (Get-Command Get-NetNeighbor -ErrorAction SilentlyContinue) {
     )
 
     foreach ($neighbor in $neighbors) {
+        $role = $null
         $ip = [string]$neighbor.IPAddress
         $mac = [string]$neighbor.LinkLayerAddress
 
@@ -196,8 +197,6 @@ if (Get-Command Get-NetNeighbor -ErrorAction SilentlyContinue) {
             role = $role
             source = "windows_neighbor_table"
         }
-
-        $role = $null
     }
 }
 
