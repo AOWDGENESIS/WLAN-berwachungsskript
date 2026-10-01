@@ -1,22 +1,22 @@
-param(
-    [string]$CacheRoot = "$PSScriptRoot\..\cache"
+Set-StrictMode -Version Latest
+$ErrorActionPreference = "Stop"
+
+Write-Host "Installing WLAN Guardian dependencies..." -ForegroundColor Cyan
+
+# Prüfe auf erforderliche Rollen/Features
+$requiredFeatures = @(
+    @{ Name = "PowerShell 5.1+"; Check = { $PSVersionTable.PSVersion.Major -ge 5 } }
+    @{ Name = "Windows 10 oder neuer"; Check = { [System.Environment]::OSVersion.Version.Major -ge 10 } }
 )
 
-$ErrorActionPreference = "Stop"
-Set-StrictMode -Version Latest
-
-$cache = [IO.Path]::GetFullPath($CacheRoot)
-New-Item -ItemType Directory -Force -Path $cache | Out-Null
-
-Write-Host "GENESIS Guardian dependency preflight"
-Write-Host "Cache: $cache"
-
-$names = @("dotnet","git","winget")
-foreach ($name in $names) {
-    $cmd = Get-Command $name -ErrorAction SilentlyContinue
-    if ($null -eq $cmd) { Write-Host "MISSING: $name" }
-    if ($null -ne $cmd) { Write-Host "FOUND: $name -> $($cmd.Source)" }
+foreach ($feature in $requiredFeatures) {
+    if (& $feature.Check) {
+        Write-Host "✓ $($feature.Name)" -ForegroundColor Green
+    } else {
+        Write-Host "✗ $($feature.Name) NOT FOUND" -ForegroundColor Red
+        throw "$($feature.Name) is required"
+    }
 }
 
-Write-Host "External installers are resolved from official sources only."
-Write-Host "The final bootstrapper will ask for the install path before installation."
+Write-Host ""
+Write-Host "All dependencies satisfied." -ForegroundColor Green
