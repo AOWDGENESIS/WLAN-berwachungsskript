@@ -67,28 +67,56 @@ Write-Host "✓ ZIP created: $zip"
 # 7. Installer (optional)
 Write-Host ""
 Write-Host "=== Installer Build ===" -ForegroundColor Cyan
-$iscc = Get-Command ISCC.exe -ErrorAction SilentlyContinue
-if ($null -ne $iscc) {
+
+# Pfade für Inno Setup 7
+$isccPaths = @(
+    "C:\Program Files (x86)\Inno Setup 7\ISCC.exe",
+    "C:\Program Files\Inno Setup 7\ISCC.exe",
+    "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+    "C:\Program Files\Inno Setup 6\ISCC.exe"
+)
+
+$isccPath = $null
+foreach ($path in $isccPaths) {
+    if (Test-Path $path) {
+        $isccPath = $path
+        break
+    }
+}
+
+if ($null -ne $isccPath) {
+    Write-Host "Found ISCC.exe at: $isccPath"
     Write-Host "Building Inno Setup Installer..."
     $issScript = Join-Path $root "installer\WLAN-Guardian.iss"
-    & $iscc.Source "/DMyAppVersion=$version" $issScript
-    if ($LASTEXITCODE -eq 0) {
-        Write-Host "✓ Installer created successfully"
-        $exe = Join-Path $buildRoot "WLAN-Guardian-Setup-$version.exe"
-        if (Test-Path $exe) {
-            Write-Host "  → $exe"
+    if (Test-Path $issScript) {
+        & $isccPath "/DMyAppVersion=$version" $issScript
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "✓ Installer created successfully"
+            $exe = Join-Path $buildRoot "WLAN-Guardian-Setup-$version.exe"
+            if (Test-Path $exe) {
+                $exeSize = (Get-Item $exe).Length / 1MB
+                Write-Host "  → $exe ($([Math]::Round($exeSize, 2)) MB)"
+            }
+        } else {
+            Write-Host "✗ Installer build failed (exit code: $LASTEXITCODE)"
         }
     } else {
-        Write-Host "✗ Installer build failed"
+        Write-Host "✗ Installer script not found: $issScript"
     }
 } else {
-    Write-Host "⚠ ISCC.exe not found - install Inno Setup 6 to build the installer"
-    Write-Host "  ZIP is ready at: $zip"
+    Write-Host "⚠ ISCC.exe not found"
+    Write-Host "  Checked:"
+    foreach ($path in $isccPaths) {
+        Write-Host "    - $path"
+    }
+    Write-Host "  Install Inno Setup 6 or 7 to build the installer"
 }
 
 Write-Host ""
 Write-Host "=== Release Summary ===" -ForegroundColor Green
 Write-Host "Location: $buildRoot"
 Write-Host "ZIP: $zip"
+$zipSize = (Get-Item $zip).Length / 1MB
+Write-Host "Size: $([Math]::Round($zipSize, 2)) MB"
 Write-Host ""
 Write-Host "Build complete!" -ForegroundColor Green
