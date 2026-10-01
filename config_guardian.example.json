@@ -1,9 +1,1 @@
-{
-  "version": 1,
-  "intervalSeconds": 30,
-  "testHost": "1.1.1.1",
-  "dnsName": "example.com",
-  "logDirectory": "artifacts",
-  "captureEnabled": false,
-  "tr069Enabled": false
-}
+# This file is deprecated. Use config/guardian.example.json instead.
