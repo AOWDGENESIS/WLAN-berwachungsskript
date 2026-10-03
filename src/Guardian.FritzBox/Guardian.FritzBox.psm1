@@ -26,4 +26,19 @@ function Invoke-FritzBoxProbe {
     }
 }
 
-Export-ModuleMember -Function Invoke-FritzBoxProbe
+function Get-FritzBoxPolicy {
+    param([object]$Config)
+
+    # tr069Enabled war bis hierhin ein toter Schluessel: in der Beispielconfig
+    # vorhanden, im Code nirgends gelesen. Die Policy macht ihn verbindlich und
+    # haelt die Vorgabe aus SECURITY.md fest, dass keine Anmeldedaten im
+    # Repository liegen.
+    [pscustomobject]@{
+        Enabled = [bool]$Config.tr069Enabled
+        Mode = if ($Config.tr069Enabled) { 'TR064_EXPLICIT_OPT_IN' } else { 'DISABLED' }
+        RequiresExplicitOptIn = $true
+        CredentialsInRepository = $false
+    }
+}
+
+Export-ModuleMember -Function Invoke-FritzBoxProbe, Get-FritzBoxPolicy

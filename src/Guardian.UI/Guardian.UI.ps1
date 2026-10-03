@@ -3,7 +3,12 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
-$root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+# Drei Ebenen, nicht zwei. Diese Datei liegt in src\<Modul>\, also:
+#   Datei -> src\<Modul> -> src -> Projektwurzel.
+# Mit nur zwei Split-Path war $root gleich "src", und jeder Join-Path darunter
+# ergab src\src\... oder src\artifacts\... - Import-Module, Config und Log
+# griffen damit alle daneben.
+$root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path))
 $log = Join-Path $root 'artifacts\guardian-events.jsonl'
 
 $form = New-Object Windows.Forms.Form

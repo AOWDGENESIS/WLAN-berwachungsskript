@@ -5,5 +5,9 @@
   "dnsName": "example.com",
   "logDirectory": "artifacts",
   "captureEnabled": false,
-  "tr069Enabled": false
+  "tr069Enabled": false,
+  "maxLogBytes": 5242880,
+  "maxLogFiles": 5,
+  "deviceTrackingEnabled": false,
+  "deviceScanEveryNPolls": 10
 }

@@ -1,0 +1,27 @@
+# Einheitliche Zeilenenden und Kodierung.
+# Verify-Release.ps1 und der CI-Job cross-platform lehnen UTF8-BOM in
+# ausgelieferten Dateien ab, deshalb wird hier nichts umgewandelt, was Git
+# nicht selbst als Text erkennt.
+
+* text=auto eol=lf
+
+*.ps1    text eol=lf
+*.psm1   text eol=lf
+*.psd1   text eol=lf
+# Bewusst eol=lf statt crlf: das uebergeordnete Repository setzt
+# "* text=auto eol=lf", damit Get-FileHash auf jedem System dieselben
+# Bytes sieht. CRLF wuerde die Hashes in KIT-HASHES.json instabil machen.
+*.cmd    text eol=lf
+*.iss    text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+
+# Binaerdaten niemals als Text behandeln.
+*.png    binary
+*.jpg    binary
+*.ico    binary
+*.exe    binary
+*.dll    binary
+*.pcap   binary
+*.pcapng binary

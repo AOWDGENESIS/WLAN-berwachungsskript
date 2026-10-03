@@ -1,0 +1,9 @@
+# Jede Aenderung braucht die Freigabe des Repository-Eigners.
+*                                   @AOWDGENESIS
+
+/src/Guardian.Evidence/             @AOWDGENESIS
+/src/Guardian.Security/             @AOWDGENESIS
+/src/Guardian.FritzBox/             @AOWDGENESIS
+/SECURITY.md                        @AOWDGENESIS
+/installer/                         @AOWDGENESIS
+/KIT-HASHES.json                    @AOWDGENESIS

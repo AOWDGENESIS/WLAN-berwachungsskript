@@ -1,12 +1,14 @@
 param(
-    [string]$Version = "1.0.0"
+    [string]$Version = "1.1.0"
 )
 
 $ErrorActionPreference = "Stop"
 Set-StrictMode -Version Latest
 
-# Pfade anpassen für D:\WLAN Guardian
-$root = "D:\WLAN Guardian"
+# Die Projektwurzel wird aus dem Ort des Skripts gerechnet, nicht fest
+# eingetragen. Der vorherige Wert "D:\WLAN Guardian" machte das Werkzeug fuer
+# jeden anderen Rechner unbrauchbar. Zwei Split-Path: tools\ -> Projektwurzel.
+$root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $buildRoot = Join-Path $root "build"
 $package = Join-Path $buildRoot "WLAN-Guardian-$version"
 
@@ -16,18 +18,18 @@ Write-Host "Root: $root"
 Write-Host "Build Root: $buildRoot"
 Write-Host ""
 
-# 1. Build-Verzeichnis aufräumen
+# 1. Build-Verzeichnis aufraeumen
 Write-Host "[1/6] Cleaning build directory..." -ForegroundColor Yellow
 if (Test-Path $buildRoot) { 
     Remove-Item $buildRoot -Recurse -Force
-    Write-Host "✓ Old build directory removed"
+    Write-Host "[OK] Old build directory removed"
 }
 
 # 2. Neue Release-Struktur aufbauen
 Write-Host "[2/6] Creating release structure..." -ForegroundColor Yellow
 New-Item -ItemType Directory -Path $package -Force | Out-Null
 New-Item -ItemType Directory -Path (Join-Path $package "artifacts") -Force | Out-Null
-Write-Host "✓ Release directories created"
+Write-Host "[OK] Release directories created"
 
 # 3. Kern-Dateien kopieren
 Write-Host "[3/6] Copying core files..." -ForegroundColor Yellow
@@ -38,37 +40,37 @@ foreach ($file in $requiredFiles) {
         throw "Missing: $file"
     }
     Copy-Item $source $package -Force
-    Write-Host "  ✓ $file"
+    Write-Host "  [OK] $file"
 }
 
 # 4. Verzeichnisse kopieren
 Write-Host "[4/6] Copying directories (src, config)..." -ForegroundColor Yellow
 Copy-Item (Join-Path $root "src") (Join-Path $package "src") -Recurse -Force
-Write-Host "  ✓ src/"
+Write-Host "  [OK] src/"
 Copy-Item (Join-Path $root "config") (Join-Path $package "config") -Recurse -Force
-Write-Host "  ✓ config/"
+Write-Host "  [OK] config/"
 
 # 5. Release-Validierung
 Write-Host "[5/6] Running release validation..." -ForegroundColor Yellow
 $verifyScript = Join-Path $root "tools\Verify-Release.ps1"
 if (Test-Path $verifyScript) {
     & $verifyScript -ReleaseRoot $package
-    Write-Host "✓ Release validation passed"
+    Write-Host "[OK] Release validation passed"
 } else {
-    Write-Host "⚠ Verify script not found, skipping validation"
+    Write-Host "[ACHTUNG] Verify script not found, skipping validation"
 }
 
 # 6. ZIP erstellen
 Write-Host "[6/6] Creating ZIP archive..." -ForegroundColor Yellow
 $zip = Join-Path $buildRoot "WLAN-Guardian-$version.zip"
 Compress-Archive -Path (Join-Path $package "*") -DestinationPath $zip -CompressionLevel Optimal
-Write-Host "✓ ZIP created: $zip"
+Write-Host "[OK] ZIP created: $zip"
 
 # 7. Installer (optional)
 Write-Host ""
 Write-Host "=== Installer Build ===" -ForegroundColor Cyan
 
-# Pfade für Inno Setup 7
+# Pfade fuer Inno Setup 7
 $isccPaths = @(
     "C:\Program Files (x86)\Inno Setup 7\ISCC.exe",
     "C:\Program Files\Inno Setup 7\ISCC.exe",
@@ -91,20 +93,20 @@ if ($null -ne $isccPath) {
     if (Test-Path $issScript) {
         & $isccPath "/DMyAppVersion=$version" $issScript
         if ($LASTEXITCODE -eq 0) {
-            Write-Host "✓ Installer created successfully"
+            Write-Host "[OK] Installer created successfully"
             $exe = Join-Path $buildRoot "WLAN-Guardian-Setup-$version.exe"
             if (Test-Path $exe) {
                 $exeSize = (Get-Item $exe).Length / 1MB
-                Write-Host "  → $exe ($([Math]::Round($exeSize, 2)) MB)"
+                Write-Host "  -> $exe ($([Math]::Round($exeSize, 2)) MB)"
             }
         } else {
-            Write-Host "✗ Installer build failed (exit code: $LASTEXITCODE)"
+            Write-Host "[FEHLER] Installer build failed (exit code: $LASTEXITCODE)"
         }
     } else {
-        Write-Host "✗ Installer script not found: $issScript"
+        Write-Host "[FEHLER] Installer script not found: $issScript"
     }
 } else {
-    Write-Host "⚠ ISCC.exe not found"
+    Write-Host "[ACHTUNG] ISCC.exe not found"
     Write-Host "  Checked:"
     foreach ($path in $isccPaths) {
         Write-Host "    - $path"

@@ -1,10 +1,51 @@
 {
-  "generated_utc": "2026-09-22T17:06:32.916912+00:00",
+  "generated_utc": "2026-10-02T20:09:33.637564000+00:00",
+  "archive": "WLAN-Guardian-1.1.0",
   "files": [
     {
+      "path": ".gitattributes",
+      "sha256": "0a97118734020466fb27d325a68e50c628448db3a4ece80047ea8e352ad92bf3",
+      "bytes": 773
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "sha256": "04546b5e3dd5745d88d6920387520b49fd5db457910b13b9a838fa371f9e2b3a",
+      "bytes": 406
+    },
+    {
+      "path": ".github/workflows/wlan-guardian.yml",
+      "sha256": "7a1aa80086db8ec6272c549119a9e151d85c757f594446db4542d554360290c7",
+      "bytes": 1161
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "ab6b494e2563f84de2fe5de711116f29a3ae279ab81fc8538b756e7a6b62c71c",
+      "bytes": 75
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "180ea5707cfd9db3dda3af81b0aeb4e784a49c4108516a307b50a511bdad3b51",
+      "bytes": 14346
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "sha256": "a08f5a82046b59f6e4e53d045fb101e2b681a11566d40f939acc153a4c9c9aa1",
+      "bytes": 1960
+    },
+    {
+      "path": "ENTFERNEN.txt",
+      "sha256": "34e4ea39bd91febed9d78d641dbc66bb292a66a56ae559dd82d9a24e48e1f6f8",
+      "bytes": 2206
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "fb1f738a560a2abc4079b40c70cb6316bf8da359f0ff875360e557f1beb33554",
+      "bytes": 1498
+    },
+    {
       "path": "README.md",
-      "sha256": "1f2ba7af4e2dcf8bde91d3a28d6d5dd2d2e36c66ba52e8a392c019f9128c3c7c",
-      "bytes": 801
+      "sha256": "6636a0493d191fa6378d3abb20e4c9f847484645bf136e4d23e6a5da1fa6f8d9",
+      "bytes": 4571
     },
     {
       "path": "SECURITY.md",
@@ -12,29 +53,49 @@
       "bytes": 389
     },
     {
-      "path": "android/Guardian.Admin/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "Start-Guardian-UI.ps1",
+      "sha256": "4ee14160ad9612865461860223d76b327f99f25f78cc49098bfde223919d871d",
+      "bytes": 1677
     },
     {
-      "path": "artifacts/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "Start-Guardian.ps1",
+      "sha256": "30692c67020d3fc8da2c17b00a43aa844336d6c57a57a1c1d2fa5ba2fd220300",
+      "bytes": 1142
     },
     {
-      "path": "build/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "TESTANLEITUNG.md",
+      "sha256": "ccb2c01023ee551a863382296c525ed54dbf64b2bc33a16a2984b57ae0b50d30",
+      "bytes": 8041
     },
     {
-      "path": "cache/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "Test-All.ps1",
+      "sha256": "4b27caa23d4767905f70cfb8f234c1f40cf77c0bf54ad621dd926b7262a36438",
+      "bytes": 13036
+    },
+    {
+      "path": "WLAN-Guardian-UI.cmd",
+      "sha256": "45d51b6577270a218eb7fc3587683448088d497fcacdaaa876d34c02d2efcdfc",
+      "bytes": 358
+    },
+    {
+      "path": "WLAN-Guardian.cmd",
+      "sha256": "6eeeb04878998f0875962b72e5d31128bf45e159e3dd98bb05acc15a446619c0",
+      "bytes": 264
+    },
+    {
+      "path": "config/guardian.example.json",
+      "sha256": "70b9a676799bc5b2178d93c106286970828b073f978189106d90e8dc8b8ece03",
+      "bytes": 291
     },
     {
       "path": "config/release-manifest.example.json",
       "sha256": "8ea96738202c6b11a144772102586965d3a157e39d68fb639c8c5aa2180465f5",
       "bytes": 801
+    },
+    {
+      "path": "docs/ARCHITEKTUR-ENTSCHEIDUNG.md",
+      "sha256": "7e79aebd6d4fd50ca7fb3c69517b820567aa26d8f3284c1da90ccfd9d2670493",
+      "bytes": 4212
     },
     {
       "path": "docs/COMPONENT-MATRIX.md",
@@ -47,9 +108,29 @@
       "bytes": 641
     },
     {
+      "path": "docs/GUARDIAN-SERVICE.md",
+      "sha256": "7ae08d9ea7611532050d81e7ef2be73f099ecae89423665a7840c357fb04d6b8",
+      "bytes": 1059
+    },
+    {
+      "path": "docs/GUARDIAN-UI.md",
+      "sha256": "39bb409085bc0b39aa6bf33059313d33e6f8b8c3baa5075864438cd1c9f6215c",
+      "bytes": 754
+    },
+    {
       "path": "docs/INSTALL-FLOW.md",
       "sha256": "7a6ee4480a388bca70e1dced43923a7417ae4dc78c5c44e6564711f107cbb49b",
       "bytes": 632
+    },
+    {
+      "path": "docs/INSTALLATION-DE.md",
+      "sha256": "46f46650c38e41db3f7f33182507b057d78c55977724def224c784ffa7d8b624",
+      "bytes": 3029
+    },
+    {
+      "path": "docs/MODULE-REFERENCE.md",
+      "sha256": "3112f0de3c71950c655b7f922c5c0e8fbc2c67594443de5330c22382d7f10179",
+      "bytes": 2353
     },
     {
       "path": "docs/OFFICIAL-SOURCES.md",
@@ -57,104 +138,149 @@
       "bytes": 655
     },
     {
+      "path": "docs/QUICKSTART.md",
+      "sha256": "e5b90341033ff7b62641b4a16a725281060248bf4a298d06edc597bd8d629533",
+      "bytes": 2001
+    },
+    {
+      "path": "docs/RELEASE-CHECKLIST.md",
+      "sha256": "658c5f3f1e5f676ddf1cfaca508364fad24b92f83136a2871b1db50f2c8ae348",
+      "bytes": 1352
+    },
+    {
       "path": "docs/TEST-LOOP.md",
       "sha256": "462a143ddecb768c5f2043f08195a9d3a1c243f1e1eb0ceabb44948b122791eb",
       "bytes": 474
     },
     {
+      "path": "docs/architecture/IMPLEMENTATION-STATUS.md",
+      "sha256": "8ccc8ff4aa060914724ca838e7d0141256b975f93f8cf69e59044193035c5cad",
+      "bytes": 231
+    },
+    {
+      "path": "docs/architecture/README.md",
+      "sha256": "4c6261621c85df2e760d1d5a28c6b2875043ddb271ebb8a8a5132d2124f2896d",
+      "bytes": 475
+    },
+    {
       "path": "installer/README.md",
-      "sha256": "8b1a58346865992178b6dba0a465b5fab193b1a8c64acfe587dee936343a1f74",
-      "bytes": 502
+      "sha256": "9f4faed946e2f31433dae5a6362e69612f424113742ea5a265a7da209cbaf0c8",
+      "bytes": 392
     },
     {
-      "path": "lab/hyperv/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "installer/WLAN-Guardian.iss",
+      "sha256": "8e1c4413be8263859e4a30d88f1ba962357baaa44c98fd3c30d69af2aa10b9f3",
+      "bytes": 1873
     },
     {
-      "path": "lab/reports/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian-Devices.ps1",
+      "sha256": "fdb61331b850026409f6dd804c87a44d1fd4cdc33645819a8c5023ea2a9371d1",
+      "bytes": 6172
     },
     {
-      "path": "lab/sandbox/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Capture/Guardian.Capture.psm1",
+      "sha256": "28b144cd286d67f93d4abfb8e57e8cacca5bdf6c2d172f9fe5b7506259ac696d",
+      "bytes": 336
     },
     {
-      "path": "lab/scenarios/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Core/Guardian.Core.psm1",
+      "sha256": "ce7dbbd61e843241125f7d8b25845e07e49c1e022be8281cf60f30b458d7197c",
+      "bytes": 1388
     },
     {
-      "path": "lab/test-data/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Devices/Guardian.Devices.psm1",
+      "sha256": "f6606e2dd0efb5e56646eceb3faf3be8c273e75c502efa6e50e05a804e7747a4",
+      "bytes": 1390
     },
     {
-      "path": "src/Guardian.Capture/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Evidence/Guardian.Evidence.psm1",
+      "sha256": "979885d8aaca0f1c56c328bfa2f48e3a4bc780d8ca3377c333e7fafb96939f1e",
+      "bytes": 1268
     },
     {
-      "path": "src/Guardian.Core/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.FritzBox/Guardian.FritzBox.psm1",
+      "sha256": "948d953eda5ca797a72d983712c678051911a91e796489b03254f2bfaf52141f",
+      "bytes": 1420
     },
     {
-      "path": "src/Guardian.Devices/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Network/Guardian.Network.psm1",
+      "sha256": "c38f8fc1e32fb92156cf768e9156e52de242bdde3fbf1d11f3ed2dd29a6429b4",
+      "bytes": 1118
     },
     {
-      "path": "src/Guardian.Evidence/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Security/Guardian.Security.psm1",
+      "sha256": "886452d18afb563f856074146282e29f92b7a85409b67339f387e6ad8dfab093",
+      "bytes": 828
     },
     {
-      "path": "src/Guardian.FritzBox/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Service/Guardian.Service.ps1",
+      "sha256": "8ddcd8dc1863fc647af4974784111859843eea351128900aff5940fa37050fc6",
+      "bytes": 2652
     },
     {
-      "path": "src/Guardian.Network/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.Tray/Guardian.Tray.ps1",
+      "sha256": "df02876819c000a5bcbbc0ac4d06b82d8f9a03ace6614471deab3c824c12d0e0",
+      "bytes": 2292
     },
     {
-      "path": "src/Guardian.Security/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.UI/Guardian.UI.ps1",
+      "sha256": "551508f62cbcc831d147a99c748a43dc1dbf0423dd9b918fd273321fcd9ccad7",
+      "bytes": 2268
     },
     {
-      "path": "src/Guardian.Service/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
-    },
-    {
-      "path": "src/Guardian.Tray/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
-    },
-    {
-      "path": "src/Guardian.UI/.gitkeep",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "bytes": 0
+      "path": "src/Guardian.ps1",
+      "sha256": "7ae025ef77a042ce5cf90ba14edebb70f63b7b4f461132cd867e35c7fca7cdc8",
+      "bytes": 19345
     },
     {
       "path": "tests/Release-Gate.ps1",
-      "sha256": "1e09c4fe3f4b3a35e2e95003b13de4f88cf1b12956dcec6f3d27859015af6639",
-      "bytes": 333
+      "sha256": "29dfcd3cb7e024da67f95cd51025a769be7ca2f89e64c6714e7de518d90226a8",
+      "bytes": 1443
+    },
+    {
+      "path": "tests/Verify-Chain.ps1",
+      "sha256": "9df9eac102c9741595c305c70d9257adca6c41968bb6381774466eba9e1249c3",
+      "bytes": 5557
+    },
+    {
+      "path": "tools/Build-Complete-Release.ps1",
+      "sha256": "ef5e49bad71a314f286bf69c96d22e765c66790be6c45eeb01b22c4f02031e63",
+      "bytes": 11019
+    },
+    {
+      "path": "tools/Build-Release.ps1",
+      "sha256": "24795aaf7170e8a1c7bfd585a7ea84cdd7cb784cf0e3c87c34027538d2f1e780",
+      "bytes": 1901
+    },
+    {
+      "path": "tools/Get-GuardianHealth.ps1",
+      "sha256": "20248bc785ff3e5beb0f9463cc7449201f56c87d0374ea2eb79cf66ae1eddc86",
+      "bytes": 13754
     },
     {
       "path": "tools/Install-Dependencies.ps1",
-      "sha256": "0fbc05d6700bc18434d9868f86865a38df2f1fa55bb90b4a461c3c6455da1f52",
-      "bytes": 723
+      "sha256": "398f2860d70b626224bf331c8f2933409ddb869249b881f52b327bb609fbb480",
+      "bytes": 760
+    },
+    {
+      "path": "tools/New-KitHashes.ps1",
+      "sha256": "a5ade712a4301d66713da20b82513244ed4b52abd2d377c222663e415a91e55d",
+      "bytes": 3415
+    },
+    {
+      "path": "tools/Release-Builder.ps1",
+      "sha256": "b621761067167a9d4487ce0eff6daa7d95ebc1dccee9381ea4df402eb75982b4",
+      "bytes": 4380
+    },
+    {
+      "path": "tools/Set-GuardianAutostart.ps1",
+      "sha256": "44a7c42d9c3f34d67d50a077deaf70e23d82adfa7398dfa2c569970d32d79dca",
+      "bytes": 7021
     },
     {
       "path": "tools/Verify-Release.ps1",
-      "sha256": "c019e53d495362233bcb218f1dae4a4974768ac2ad76489c81184675dc9125cb",
-      "bytes": 705
+      "sha256": "282d634a7be311b5b7669fd94362ed77137ac9266b0595f938594bf409ba77b7",
+      "bytes": 2681
     }
   ]
 }

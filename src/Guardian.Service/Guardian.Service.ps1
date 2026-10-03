@@ -1,8 +1,31 @@
+<#
+.SYNOPSIS
+    Modulare Ueberwachungsschleife - NOCH NICHT VERDRAHTET.
+
+.DESCRIPTION
+    Dieser Pfad ist erreichbar nur ueber src/Guardian.Tray/Guardian.Tray.ps1,
+    und das ruft niemand auf. Er ist ausserdem nie erfolgreich gelaufen: Bis
+    Commit 4829fc4 war $root um eine Ebene zu flach, damit schlugen alle vier
+    Import-Module fehl, bevor irgendetwas anderes lief.
+
+    Die MVP-Implementierung ist src/Guardian.ps1, aufgerufen ueber
+    Start-Guardian.ps1. Einzelheiten und die Voraussetzungen fuer einen
+    spaeteren Wechsel stehen in docs/ARCHITEKTUR-ENTSCHEIDUNG.md.
+
+    Beide Pfade haengen an dieselbe guardian-events.jsonl, fuehren aber je eine
+    eigene State-Datei. Die Ein-Instanz-Sperre im Kern verhindert, dass beide
+    gleichzeitig laufen.
+#>
 param([string]$ConfigPath = '')
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
-$root = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
+# Drei Ebenen, nicht zwei. Diese Datei liegt in src\<Modul>\, also:
+#   Datei -> src\<Modul> -> src -> Projektwurzel.
+# Mit nur zwei Split-Path war $root gleich "src", und jeder Join-Path darunter
+# ergab src\src\... oder src\artifacts\... - Import-Module, Config und Log
+# griffen damit alle daneben.
+$root = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path))
 if (-not $ConfigPath) {
     $ConfigPath = Join-Path $root 'config\guardian.example.json'
 }

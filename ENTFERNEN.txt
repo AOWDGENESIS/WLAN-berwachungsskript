@@ -1,0 +1,43 @@
+# Eintraege, die Deploy-ToWLANRepo.ps1 aus dem Ziel-Repository entfernen darf.
+# Jede Zeile ist ein Pfad relativ zur Wurzel des Ziel-Repositories.
+# Leere Zeilen und Zeilen mit # am Anfang werden uebersprungen.
+#
+# Regel: Hier darf nur stehen, was woanders weiter existiert (Umzug) oder was
+# eine echte Dublette ist. Steht eine Datei im Commit als Loeschung, die hier
+# nicht aufgefuehrt ist, bricht das Deploy-Skript ab und pusht nichts.
+#
+# Stand: berechnet am 2026-10-02 gegen AOWDGENESIS/WLAN-berwachungsskript
+# Commit 0b6221d (31 Commits, 55 Dateien).
+
+# Umzuege - der Inhalt liegt unter dem neuen Pfad weiter vor
+INSTALL-FLOW.md                          # -> docs/INSTALL-FLOW.md
+docs/SECURITY.md                         # -> SECURITY.md
+release-manifest.example.json            # -> config/release-manifest.example.json
+docs_architecture_README.md              # -> docs/architecture/README.md
+docs_architecture_IMPLEMENTATION-STATUS.md  # -> docs/architecture/IMPLEMENTATION-STATUS.md
+
+# Flache Upload-Duplikate - echte Pfade sind vorhanden
+src_Guardian.Core_Guardian.Core.psm1
+src_Guardian.Core_Guardian.Core (1).psm1
+src_Guardian.Devices_Guardian.Devices.psm1
+src_Guardian.Network_Guardian.Network.psm1
+src_Guardian.Capture_Guardian.Capture.psm1
+src_Guardian.Evidence_Guardian.Evidence.psm1
+src_Guardian.FritzBox_Guardian.FritzBox.psm1
+src_Guardian.Security_Guardian.Security.psm1
+src_Guardian.Service_Guardian.Service.ps1
+src_Guardian.Tray_Guardian.Tray.ps1
+src_Guardian.UI_Guardian.UI.ps1
+# Die beiden folgenden sind KEINE reinen Duplikate: Sie enthielten Pruefungen,
+# die in der verschachtelten Fassung fehlten. Die Inhalte wurden vorher
+# uebernommen - der dotnet-Check nach tests/Release-Gate.ps1, die erweiterte
+# required-Liste (WLAN-Guardian-UI.cmd, Modul-Pfade) nach tools/Verify-Release.ps1.
+tests_Release-Gate.ps1
+tools_Verify-Release.ps1
+tools_Build-Release.ps1
+
+# Weitere Dublikate
+installer_README.md                      # -> installer/README.md
+config_guardian.example.json             # -> config/guardian.example.json
+config_guardian.example (1).json         # -> config/guardian.example.json
+github_workflows_build.yml               # -> .github/workflows/wlan-guardian.yml

@@ -1,0 +1,52 @@
+name: WLAN Guardian
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: Release-Gate und Hash-Chain
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Vollstaendiger Testlauf
+        shell: pwsh
+        run: ./Test-All.ps1 -SkipEndToEnd
+
+      - name: Release-Gate
+        shell: pwsh
+        run: ./tests/Release-Gate.ps1
+
+      - name: Hash-Chain Selbsttest
+        shell: pwsh
+        run: ./tests/Verify-Chain.ps1 -SelfTest
+
+      - name: KIT-HASHES stimmt mit dem Baum ueberein
+        shell: pwsh
+        run: ./tools/New-KitHashes.ps1 -Check
+
+  package:
+    name: Release bauen und verifizieren
+    runs-on: windows-latest
+    needs: gate
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Vollstaendiger Testlauf mit End-to-End
+        shell: pwsh
+        run: ./Test-All.ps1
+
+      - name: Paket bauen (ohne Inno Setup)
+        shell: pwsh
+        run: ./tools/Build-Release.ps1 -SkipInstaller
+
+      - name: Paketinhalt
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse build | Select-Object FullName, Length | Format-Table -AutoSize

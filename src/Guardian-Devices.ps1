@@ -158,9 +158,14 @@ if (Get-Command Get-NetNeighbor -ErrorAction SilentlyContinue) {
             continue
         }
 
-        $parsed = $null
+        # -as statt TryParse mit [ref]. Dasselbe Verhalten - bei einem
+        # ungueltigen Wert kommt $null zurueck - aber ohne den [ref]-Uebergriff,
+        # der zwischen PowerShell 5.1 und 7 nicht verlaesslich ist. Der Abbruch
+        # im ersten echten Lauf kam nicht von hier, sondern vom Mutex in
+        # src/Guardian.ps1:358. Die Ersetzung bleibt trotzdem richtig.
+        $parsed = $ip -as [System.Net.IPAddress]
 
-        if (-not [System.Net.IPAddress]::TryParse($ip, [ref]$parsed)) {
+        if ($null -eq $parsed) {
             continue
         }
 
@@ -225,7 +230,10 @@ $result = [PSCustomObject]@{
 
 $json = $result | ConvertTo-Json -Depth 5
 
-$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+# [Typ]::new() statt der New-Object-Kurzform. Die Kurzform hat am
+# 02.10.2026 den ersten echten Lauf unter PowerShell 7.6.6 bei
+# System.Threading.Mutex abbrechen lassen; siehe src/Guardian.ps1.
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
 [System.IO.File]::WriteAllText($OutputPath, $json, $utf8NoBom)
 
 $result | ConvertTo-Json -Depth 5
