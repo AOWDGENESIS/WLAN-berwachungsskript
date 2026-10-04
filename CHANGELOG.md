@@ -22,7 +22,46 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - Drei Werkzeuge auf ASCII umgestellt. Windows PowerShell 5.1 liest `.ps1`
   ohne BOM als ANSI, Umlaute und Haken waeren im Konsolenfenster zerfallen.
 
+### Geaendert
+- **Der Autostart startet pwsh jetzt mit verstecktem Fenster.**
+  `tools/Set-GuardianAutostart.ps1` uebergibt zusaetzlich `-WindowStyle
+  Hidden`. Der Task laeuft ohne gespeichertes Kennwort und damit in der
+  interaktiven Sitzung; `pwsh.exe` ist ein Konsolenprogramm und legte ein
+  sichtbares Fenster an, dessen Schliessen den Guardian am 04.10.2026 mit
+  `0xC000013A` beendete. Was versehentlich geschlossen werden kann, wird jetzt
+  gar nicht erst angezeigt.
+  Zwei Grenzen bleiben und sind Absicht: Ein Dienst ist das nicht, der
+  Guardian stirbt weiterhin mit der Sitzung. Und die `Write-Host`-Ausgabe ist
+  nirgends mehr sichtbar - was zaehlt, steht in
+  `artifacts/guardian-events.jsonl`. Beim Start kann die Konsole kurz
+  aufblitzen, bevor die Einstellung greift.
+  Ein bereits angelegter Task behaelt die alten Argumente; er muss mit
+  `-Uninstall` und `-Install` neu angelegt werden.
+
 ### Behoben
+- **Der Autostart-Bericht brach an grossen Ergebniswerten ab.**
+  `tools/Set-GuardianAutostart.ps1` castete `LastTaskResult` auf `[int]`.
+  Der Taskplaner liefert dort aber auch NTSTATUS-Werte, und am 04.10.2026 lag
+  `3221225786` (`0xC000013A`) vor - ueber `Int32.MaxValue`. Das Skript brach
+  mit `Der Wert "3221225786" kann nicht in den Typ "System.Int32" konvertiert
+  werden` ab, bevor es die Statuscodes auswerten konnte. Der Bericht war damit
+  genau in dem Fall unbrauchbar, in dem etwas zu melden gewesen waere. Jetzt
+  `[int64]`, und der Wert wird zusaetzlich hexadezimal gezeigt.
+- **Bekannte Fehlerschluessel werden benannt.** `0xC000013A` (von aussen
+  beendet), `0x8004131F` (Instanz laeuft bereits), `0x800704DD` (Dienst nicht
+  verfuegbar) und `0x41306` (Task beendet) bekommen einen Text statt einer
+  nackten Zahl. Die Dezimalwerte sind gegen die Hexwerte nachgerechnet.
+
+### Bekannt
+- **Der Dauerlauf uebersteht den Taskplaner nicht.** Am 04.10.2026 startete
+  der Task um 06:20:51 UTC, schrieb zwei Ereignisse um 06:20:53 UTC und endete
+  mit `0xC000013A` - "The application terminated as a result of a CTRL+C",
+  also von aussen beendet. Danach `Aktualitaet WARN letztes Ereignis vor
+  990 s` und `Prozess WARN`. Der Task laeuft ohne gespeichertes Kennwort und
+  damit nur in der interaktiven Sitzung; `pwsh.exe` ist ein Konsolenprogramm,
+  und dessen Konsole zu schliessen beendet den Guardian. Ein Dienst im
+  eigentlichen Sinn ist das nicht. Moegliche Wege: `-WindowStyle Hidden` in
+  der Task-Action, oder ein echter Windows-Dienst. Beides ist noch offen.
 - **Ein laufender Autostart galt als Fehlschlag.**
   `tools/Set-GuardianAutostart.ps1` wertete `LastTaskResult` mit `-ne 0` und
   meldete damit `Der letzte Lauf war nicht erfolgreich`, ging mit `exit 1`
@@ -35,14 +74,26 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   beide bleiben Fehlschlaege.
 
 ### Bekannt
-- **Die Ein-Instanz-Sperre schuetzt nicht ueber Sitzungsgrenzen.** Am
-  04.10.2026 lief der geplante Task, und ein zusaetzlicher Konsolenlauf
-  startete trotzdem und schrieb in dieselbe `guardian-events.jsonl`. Ursache:
-  Ohne `SeCreateGlobalPrivilege` weicht die Sperre auf `Local\` aus, und das
-  ist sitzungslokal - Task und Konsole sehen je eine eigene Sperre. Der
-  Kommentar im Kern behauptet das Gegenteil ("Genau das passiert, wenn
-  Konsole und Dienst parallel laufen"). Die Kette war in diesem Fall trotzdem
-  intakt, aber verlassen kann man sich darauf nicht.
+- **Ein verschwindendes Logverzeichnis beendet den Dauerlauf still mit
+  Exit-Code 1.** Die Hauptschleife in `src/Guardian.ps1` steht in einem
+  `try { } finally { }` ohne `catch`. Wirft `Write-GuardianEvent` - etwa weil
+  `artifacts/` geloescht wurde - dann bricht der Lauf ab, das `finally` gibt
+  die Sperre frei, und es bleibt Exit-Code 1 ohne jede Diagnose. Beobachtet am
+  04.10.2026: Der Installationsordner wurde unter dem laufenden Task geloescht
+  und neu geklont, danach meldete der Taskplaner `Status: Ready`,
+  `Letztes Ergebnis: 1`. Fuer einen Dauerlaeufer ist das zu bruechig.
+  Einzige Ausnahme im Kern ist der Geraeteabgleich, der seinen Fehler als
+  `DEVICE_SCAN_FAILED` selbst in die Kette schreibt und weiterlaeuft.
+
+- **Die Ein-Instanz-Sperre ist sitzungslokal, wenn `Global\` verweigert
+  wird.** Ohne `SeCreateGlobalPrivilege` weicht der Kern auf `Local\` aus, und
+  zwei Laeufe in verschiedenen Windows-Sitzungen sehen dann je eine eigene
+  Sperre. Das ist eine Eigenschaft des Mechanismus, kein beobachteter Vorfall:
+  Der Verdacht, am 04.10.2026 haetten Task und Konsole parallel geschrieben,
+  liess sich nicht halten - der Task war zu dem Zeitpunkt bereits mit
+  Exit-Code 1 beendet. Der Kommentar im Kern ("Genau das passiert, wenn
+  Konsole und Dienst parallel laufen") ist fuer den Sitzungsfall trotzdem
+  nicht gedeckt.
 
 ### Hinzugefuegt
 - **Siebter Testschritt `Rotation`.** Die Log-Rotation war bisher nur statisch

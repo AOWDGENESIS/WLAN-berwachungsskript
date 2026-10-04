@@ -81,7 +81,19 @@ if (-not (Test-Path -LiteralPath $ConfigPath -PathType Leaf)) {
 # Interpreter waehlen wie WLAN-Guardian.cmd: pwsh, wenn vorhanden, sonst 5.1.
 $interpreter = 'powershell.exe'
 if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { $interpreter = 'pwsh.exe' }
-$argumente = "-NoLogo -NoProfile -ExecutionPolicy Bypass -File `"$starter`" -ConfigPath `"$ConfigPath`""
+# -WindowStyle Hidden. Der Task laeuft ohne gespeichertes Kennwort und damit
+# in der interaktiven Sitzung; pwsh.exe ist ein Konsolenprogramm und legt ein
+# sichtbares Fenster an. Am 04.10.2026 endete der Guardian mit 0xC000013A
+# ("The application terminated as a result of a CTRL+C"), nachdem dieses
+# Fenster geschlossen worden war. Mit verstecktem Fenster gibt es nichts mehr,
+# das versehentlich geschlossen werden kann.
+#
+# Zwei Grenzen bleiben bestehen und sind Absicht, nicht Versehen:
+#   - Ein Dienst ist das nicht. Der Guardian stirbt weiterhin mit der Sitzung.
+#   - Die Ausgabe von Write-Host ist nirgends mehr sichtbar. Was zaehlt, steht
+#     in artifacts/guardian-events.jsonl, und das wird unveraendert geschrieben.
+# Beim Start kann die Konsole kurz aufblitzen, bevor die Einstellung greift.
+$argumente = "-NoLogo -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$starter`" -ConfigPath `"$ConfigPath`""
 
 # Geplante Tasks brauchen das ScheduledTasks-Modul. Auf Systemen ohne es gibt
 # es noch schtasks.exe, aber dann ist der Rueckgabewert schwerer zu lesen.
@@ -124,11 +136,29 @@ if (-not $Install -and -not $Uninstall) {
     # Kleine Werte wie 1 oder 2 sind dagegen Exit-Codes des gestarteten
     # Programms, und 0x8007xxxx sind Windows-Fehlercodes. Beide bleiben
     # Fehlschlaege.
-    $ergebnis = [int]$info.LastTaskResult
+    # [int64] und nicht [int]. LastTaskResult traegt auch NTSTATUS-Werte wie
+    # 0xC000013A (3221225786), und die liegen ueber Int32.MaxValue. Der Cast
+    # auf [int] hat am 04.10.2026 genau daran das Skript abgebrochen:
+    #   Der Wert "3221225786" kann nicht in den Typ "System.Int32"
+    #   konvertiert werden.
+    # Damit war der Bericht unbrauchbar, bevor er die Codes unten ueberhaupt
+    # auswerten konnte.
+    $ergebnis = [int64]$info.LastTaskResult
+    $hex = '0x{0:X8}' -f $ergebnis
+
+    # Informationscodes des Taskplaners. Fuer einen Dauerlaeufer ist 0x41301
+    # der Sollzustand, kein Fehler.
     $statuscode = @{
         267008 = 'bereit, wartet auf den naechsten Lauf'
         267009 = 'laeuft gerade'
         267011 = 'ist noch nie gelaufen'
+    }
+    # Bekannte Fehlerschluessel, genannt statt nur als Zahl hingeworfen.
+    $fehlercode = @{
+        3221225786 = 'von aussen beendet - STRG+C, geschlossene Konsole oder beendeter Task'
+        2147750687 = 'eine Instanz dieses Tasks laeuft bereits'
+        2147943645 = 'Dienst nicht verfuegbar - laeuft der Task nur bei angemeldetem Nutzer?'
+        267014     = 'der Task wurde beendet'
     }
     if ($statuscode.ContainsKey($ergebnis)) {
         Write-Host ''
@@ -139,7 +169,13 @@ if (-not $Install -and -not $Uninstall) {
     }
     if ($ergebnis -ne 0 -and $null -ne $info.LastRunTime) {
         Write-Host ''
-        Write-Host "Der letzte Lauf war nicht erfolgreich, Ergebnis $ergebnis. Pruefung mit:" -ForegroundColor Yellow
+        if ($fehlercode.ContainsKey($ergebnis)) {
+            Write-Host "Der letzte Lauf schlug fehl ($hex): $($fehlercode[$ergebnis])." -ForegroundColor Yellow
+        }
+        else {
+            Write-Host "Der letzte Lauf war nicht erfolgreich, Ergebnis $ergebnis ($hex)." -ForegroundColor Yellow
+        }
+        Write-Host 'Pruefung mit:'
         Write-Host '  ./tools/Get-GuardianHealth.ps1'
         exit 1
     }
@@ -167,6 +203,7 @@ Write-Host 'Lege den Autostart an:'
 Write-Host "  Name        : $TaskName"
 Write-Host "  Ausloeser   : bei Anmeldung des aktuellen Nutzers"
 Write-Host "  Rechte      : Limited, keine Erhoehung, kein gespeichertes Kennwort"
+Write-Host "  Fenster     : versteckt, damit es nicht versehentlich geschlossen wird"
 Write-Host "  Interpreter : $interpreter"
 Write-Host "  Skript      : $starter"
 Write-Host "  Config      : $ConfigPath"
