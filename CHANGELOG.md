@@ -6,6 +6,31 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 ## [1.1.0] - 2026-10-02
 
 ### Geaendert
+- **Die Ein-Instanz-Sperre haengt am Log statt am Programm.** Der Name ist
+  jetzt `WLAN-Guardian-Einziger-Lauf-` plus die ersten 16 Zeichen der SHA-256
+  des Logpfads, klein geschrieben, weil Windows-Pfade die Gross- und
+  Kleinschreibung nicht unterscheiden. `tools/Get-GuardianHealth.ps1` bildet
+  denselben Namen aus demselben Pfad. Damit gilt genau das, was der Kommentar
+  im Kern verspricht: Zwei Laeufe auf dieselbe `guardian-events.jsonl`
+  schliessen sich aus, zwei Laeufe auf verschiedene Logs nicht.
+  Noetig wurde das am 04.10.2026: Die Testlaeufe in `Test-All.ps1` schreiben in
+  eigene Temp-Ordner, teilen also nichts, wurden aber vom laufenden Daemon
+  blockiert. `Test-All.ps1` meldete `PASS 5 FAIL 2`, der Deploy brach ab, und
+  jeder Deploy musste den Daemon erst anhalten.
+
+### Behoben
+- **Die Hauptschleife faengt Fehler jetzt ab.** Sie stand in einem
+  `try { } finally { }` ohne `catch`; ein werfendes `Write-GuardianEvent`
+  beendete den Dauerlauf mit Exit-Code 1 und ohne jede Diagnose. Beobachtet am
+  04.10.2026, als der Installationsordner unter dem laufenden Task geloescht
+  und neu geklont wurde. Jetzt wird der Fehler als `GUARDIAN_ERROR` in
+  dieselbe Kette geschrieben. Geht auch das nicht, geht die Meldung auf die
+  Konsole. Nach fuenf Fehlversuchen in Folge beendet sich der Guardian mit
+  Diagnose statt endlos weiterzulaufen. Im Einzellauf (`-Once`) wird weiter
+  durchgeworfen, damit `Test-All.ps1` einen echten Fehler nicht als PASS
+  verbucht.
+
+### Geaendert
 - **Schalter ohne Wirkung werden jetzt abgelehnt.** `captureEnabled` und
   `tr069Enabled` stehen in der Beispielconfig, ausgewertet werden sie aber nur
   von `Get-CapturePolicy` und `Get-FritzBoxPolicy`, und beide Funktionen haben
@@ -87,27 +112,20 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   sind Exit-Codes des gestarteten Programms und `0x8007xxxx` Windows-Fehler;
   beide bleiben Fehlschlaege.
 
-### Bekannt
-- **Ein verschwindendes Logverzeichnis beendet den Dauerlauf still mit
-  Exit-Code 1.** Die Hauptschleife in `src/Guardian.ps1` steht in einem
-  `try { } finally { }` ohne `catch`. Wirft `Write-GuardianEvent` - etwa weil
-  `artifacts/` geloescht wurde - dann bricht der Lauf ab, das `finally` gibt
-  die Sperre frei, und es bleibt Exit-Code 1 ohne jede Diagnose. Beobachtet am
-  04.10.2026: Der Installationsordner wurde unter dem laufenden Task geloescht
-  und neu geklont, danach meldete der Taskplaner `Status: Ready`,
-  `Letztes Ergebnis: 1`. Fuer einen Dauerlaeufer ist das zu bruechig.
-  Einzige Ausnahme im Kern ist der Geraeteabgleich, der seinen Fehler als
-  `DEVICE_SCAN_FAILED` selbst in die Kette schreibt und weiterlaeuft.
-
 - **Die Ein-Instanz-Sperre ist sitzungslokal, wenn `Global\` verweigert
   wird.** Ohne `SeCreateGlobalPrivilege` weicht der Kern auf `Local\` aus, und
   zwei Laeufe in verschiedenen Windows-Sitzungen sehen dann je eine eigene
   Sperre. Das ist eine Eigenschaft des Mechanismus, kein beobachteter Vorfall:
   Der Verdacht, am 04.10.2026 haetten Task und Konsole parallel geschrieben,
   liess sich nicht halten - der Task war zu dem Zeitpunkt bereits mit
-  Exit-Code 1 beendet. Der Kommentar im Kern ("Genau das passiert, wenn
-  Konsole und Dienst parallel laufen") ist fuer den Sitzungsfall trotzdem
-  nicht gedeckt.
+  Exit-Code 1 beendet. Im selben Task-Setup (`-AtLogOn` ohne gespeichertes
+  Kennwort) greift die Sperre dagegen nachweislich, belegt am 04.10.2026 durch
+  `Prozess PASS` und zwei abgewiesene Testlaeufe.
+- **Ein relatives `logDirectory` wird unterschiedlich aufgeloest.** Der Kern
+  nimmt `Get-Location`, `tools/Get-GuardianHealth.ps1` nimmt den Skriptordner.
+  Beim Task stimmen beide, weil `-WorkingDirectory` auf die Wurzel gesetzt ist.
+  Bei einem manuellen Start aus einem anderen Ordner nicht - dann prueft die
+  Gesundheitspruefung ein anderes Log als das, in das geschrieben wird.
 
 ### Hinzugefuegt
 - **Siebter Testschritt `Rotation`.** Die Log-Rotation war bisher nur statisch

@@ -24,8 +24,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "edbf44f115df878d8e5acfb608bbcbf0c8a4819e7435dd894e996c0aed2dd79e",
-      "bytes": 19758
+      "sha256": "105d19fa9e570013064fa7e3dd0e398684731db89b0aaa3f5038b02cf9187479",
+      "bytes": 20936
     },
     {
       "path": "CONTRIBUTING.md",
@@ -229,8 +229,8 @@
     },
     {
       "path": "src/Guardian.ps1",
-      "sha256": "7ae025ef77a042ce5cf90ba14edebb70f63b7b4f461132cd867e35c7fca7cdc8",
-      "bytes": 19345
+      "sha256": "56970a1cee047138376adbe7358e13350f0b4921a3b444b74c68c00ae473d3b2",
+      "bytes": 21816
     },
     {
       "path": "tests/Release-Gate.ps1",
@@ -254,8 +254,8 @@
     },
     {
       "path": "tools/Get-GuardianHealth.ps1",
-      "sha256": "20248bc785ff3e5beb0f9463cc7449201f56c87d0374ea2eb79cf66ae1eddc86",
-      "bytes": 13754
+      "sha256": "44aa04a128a98b1ba7472603517dcd3ac10739c16007160fa70c5ac3d8b64dd4",
+      "bytes": 14094
     },
     {
       "path": "tools/Install-Dependencies.ps1",

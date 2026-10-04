@@ -279,10 +279,15 @@ else {
 # --- 8 Prozess ------------------------------------------------------------
 # Die Ein-Instanz-Sperre im Kern heisst WLAN-Guardian-Einziger-Lauf. Ist sie
 # gehalten, laeuft ein Guardian. OpenExisting wirft, wenn nicht.
+# Der Kern bindet den Namen an das Log, also muss diese Pruefung denselben
+# Namen bilden. Get-Sha256Text ist baugleich zu Get-Sha256 im Kern, und
+# ToLowerInvariant kommt dazu, weil Windows-Pfade die Gross- und
+# Kleinschreibung nicht unterscheiden.
+$mutexName = 'WLAN-Guardian-Einziger-Lauf-' + (Get-Sha256Text $logFile.ToLowerInvariant()).Substring(0, 16)
 $laufend = $false
 foreach ($praefix in @('Global\', 'Local\')) {
     try {
-        $m = [System.Threading.Mutex]::OpenExisting($praefix + 'WLAN-Guardian-Einziger-Lauf')
+        $m = [System.Threading.Mutex]::OpenExisting($praefix + $mutexName)
         $m.Dispose()
         $laufend = $true
         break

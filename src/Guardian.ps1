@@ -358,6 +358,20 @@ function Write-GuardianEvent {
 # SeCreateGlobalPrivilege. Ein normaler Nutzer hat das nicht, deshalb wird bei
 # UnauthorizedAccessException auf den sitzungslokalen Namen ausgewichen - dann
 # schuetzt die Sperre immer noch vor zwei Konsolenlaeufen desselben Nutzers.
+#
+# Der Name haengt am Log und nicht am Programm. Ausschliessen sollen sich zwei
+# Laeufe, die dieselbe guardian-events.jsonl schreiben - genau das sagt der
+# Kommentar oben. Ein fester Name sperrte dagegen global: Die Testlaeufe in
+# Test-All.ps1 schreiben in eigene Temp-Ordner, teilen also nichts, und wurden
+# am 04.10.2026 trotzdem abgewiesen, weil der Daemon lief. Test-All.ps1 konnte
+# damit nie gruen werden, solange der Guardian laeuft, und jeder Deploy musste
+# ihn erst anhalten.
+#
+# Ein Hash des Pfads haelt den Namen kurz und frei von Zeichen, die in einem
+# Mutex-Namen nichts zu suchen haben. Klein geschrieben, weil Windows-Pfade
+# nicht zwischen Gross- und Kleinschreibung unterscheiden.
+$mutexKennung = (Get-Sha256 $logFile.ToLowerInvariant()).Substring(0, 16)
+$mutexName = 'WLAN-Guardian-Einziger-Lauf-' + $mutexKennung
 $mutex = $null
 foreach ($praefix in @('Global\', 'Local\')) {
     try {
@@ -370,7 +384,7 @@ foreach ($praefix in @('Global\', 'Local\')) {
         # out-Parameter. ::new() bindet die Argumente direkt an den passenden
         # Konstruktor und ist seit PowerShell 5.0 verfuegbar, also in beiden
         # Versionen gleich.
-        $mutex = [System.Threading.Mutex]::new($false, ($praefix + 'WLAN-Guardian-Einziger-Lauf'))
+        $mutex = [System.Threading.Mutex]::new($false, ($praefix + $mutexName))
         break
     }
     catch [System.UnauthorizedAccessException] { continue }
@@ -391,7 +405,9 @@ if (-not $hatSperre) {
 try {
 $pollZaehler = 0
 $letzterStatus = $null
+$fehlerInFolge = 0
 do {
+    try {
     $event = Get-WlanState
     Write-GuardianEvent $event | ConvertTo-Json -Compress
 
@@ -469,6 +485,41 @@ do {
         }
     }
 
+    $fehlerInFolge = 0
+    }
+    catch {
+        # Im Einzellauf soll der Fehler sichtbar bleiben - Test-All.ps1 wertet
+        # genau das aus, und ein verschluckter Fehler waere dort ein falsches
+        # PASS. Abgefangen wird nur im Dauerlauf.
+        if ($Once) { throw }
+        $fehlerInFolge = $fehlerInFolge + 1
+        $meldung = [string]$_.Exception.Message
+        # Der Fehler gehoert in die Kette, sonst ist er nicht nachweisbar. Geht
+        # das nicht - etwa weil das Logverzeichnis verschwunden ist - dann auf
+        # die Konsole. Am 04.10.2026 endete der Guardian genau so: Ordner unter
+        # dem laufenden Prozess neu geklont, Add-Content wirft, try/finally ohne
+        # catch, Exit-Code 1 und nirgends eine Spur.
+        $protokolliert = $false
+        try {
+            Write-GuardianEvent ([ordered]@{
+                timestamp = (Get-Date).ToUniversalTime().ToString("o")
+                eventType = 'GUARDIAN_ERROR'
+                reason = $meldung
+            }) | Out-Null
+            $protokolliert = $true
+        }
+        catch { }
+        if (-not $protokolliert) {
+            Write-Host "Guardian-Fehler, nicht protokollierbar: $meldung"
+        }
+        # Fuenf Fehlversuche in Folge heisst, dass sich von selbst nichts mehr
+        # erholt. Dann mit Diagnose beenden statt endlos weiterzulaufen. Die
+        # Pause danach gibt dem System Zeit, etwa ein wieder eingehaengtes
+        # Verzeichnis sichtbar zu machen.
+        if ($fehlerInFolge -ge 5) {
+            throw "Fuenf aufeinanderfolgende Fehler, der Guardian beendet sich. Letzter Fehler: $meldung"
+        }
+    }
     if ($Once) {
         break
     }
