@@ -22,6 +22,28 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 - Drei Werkzeuge auf ASCII umgestellt. Windows PowerShell 5.1 liest `.ps1`
   ohne BOM als ANSI, Umlaute und Haken waeren im Konsolenfenster zerfallen.
 
+### Behoben
+- **Ein laufender Autostart galt als Fehlschlag.**
+  `tools/Set-GuardianAutostart.ps1` wertete `LastTaskResult` mit `-ne 0` und
+  meldete damit `Der letzte Lauf war nicht erfolgreich`, ging mit `exit 1`
+  heraus. Am 04.10.2026 traf das einen gesunden Dauerlaeufer: `LastTaskResult`
+  war `267009`, also `0x41301` `SCHED_S_TASK_RUNNING` - "laeuft gerade", ein
+  Statuscode und fuer einen Dauerlaeufer der Sollzustand. Die Codes `0x41300`
+  (bereit), `0x41301` (laeuft) und `0x41303` (noch nie gelaufen) werden jetzt
+  als Status erkannt und mit `exit 0` beantwortet. Kleine Werte wie 1 oder 2
+  sind Exit-Codes des gestarteten Programms und `0x8007xxxx` Windows-Fehler;
+  beide bleiben Fehlschlaege.
+
+### Bekannt
+- **Die Ein-Instanz-Sperre schuetzt nicht ueber Sitzungsgrenzen.** Am
+  04.10.2026 lief der geplante Task, und ein zusaetzlicher Konsolenlauf
+  startete trotzdem und schrieb in dieselbe `guardian-events.jsonl`. Ursache:
+  Ohne `SeCreateGlobalPrivilege` weicht die Sperre auf `Local\` aus, und das
+  ist sitzungslokal - Task und Konsole sehen je eine eigene Sperre. Der
+  Kommentar im Kern behauptet das Gegenteil ("Genau das passiert, wenn
+  Konsole und Dienst parallel laufen"). Die Kette war in diesem Fall trotzdem
+  intakt, aber verlassen kann man sich darauf nicht.
+
 ### Hinzugefuegt
 - **Siebter Testschritt `Rotation`.** Die Log-Rotation war bisher nur statisch
   geprueft und nie real gelaufen. Der Schritt loest sie ueber echte `-Once`-

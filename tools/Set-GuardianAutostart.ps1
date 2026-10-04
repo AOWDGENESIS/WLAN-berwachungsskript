@@ -112,9 +112,34 @@ if (-not $Install -and -not $Uninstall) {
     Write-Host ''
     Write-Host "Startet         : $interpreter"
     Write-Host "Argumente       : $argumente"
-    if ([int]$info.LastTaskResult -ne 0 -and $null -ne $info.LastRunTime) {
+    # 0x413xx sind Statuscodes des Taskplaners, keine Fehlschlaege:
+    #   0x41300  bereit, wartet auf den naechsten Lauf
+    #   0x41301  laeuft gerade
+    #   0x41303  ist noch nie gelaufen
+    # Fuer einen Dauerlaeufer ist 0x41301 der Sollzustand. Die alte Pruefung auf
+    # "-ne 0" hat am 04.10.2026 einen gesunden, laufenden Guardian als
+    # "Der letzte Lauf war nicht erfolgreich" gemeldet und ging mit exit 1
+    # heraus - genau verkehrt. Dezimal 267009 ist dasselbe wie 0x41301.
+    #
+    # Kleine Werte wie 1 oder 2 sind dagegen Exit-Codes des gestarteten
+    # Programms, und 0x8007xxxx sind Windows-Fehlercodes. Beide bleiben
+    # Fehlschlaege.
+    $ergebnis = [int]$info.LastTaskResult
+    $statuscode = @{
+        267008 = 'bereit, wartet auf den naechsten Lauf'
+        267009 = 'laeuft gerade'
+        267011 = 'ist noch nie gelaufen'
+    }
+    if ($statuscode.ContainsKey($ergebnis)) {
         Write-Host ''
-        Write-Host 'Der letzte Lauf war nicht erfolgreich. Pruefung mit:' -ForegroundColor Yellow
+        Write-Host "Letztes Ergebnis ist ein Status und kein Fehler: $($statuscode[$ergebnis])."
+        Write-Host 'Zustand pruefen mit:'
+        Write-Host '  ./tools/Get-GuardianHealth.ps1'
+        exit 0
+    }
+    if ($ergebnis -ne 0 -and $null -ne $info.LastRunTime) {
+        Write-Host ''
+        Write-Host "Der letzte Lauf war nicht erfolgreich, Ergebnis $ergebnis. Pruefung mit:" -ForegroundColor Yellow
         Write-Host '  ./tools/Get-GuardianHealth.ps1'
         exit 1
     }
