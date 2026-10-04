@@ -24,8 +24,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "e0dd88582aed8756f2d17064a9c0ee25a53677d6e392a3baccd03a564463a7c4",
-      "bytes": 18915
+      "sha256": "edbf44f115df878d8e5acfb608bbcbf0c8a4819e7435dd894e996c0aed2dd79e",
+      "bytes": 19758
     },
     {
       "path": "CONTRIBUTING.md",
@@ -274,8 +274,8 @@
     },
     {
       "path": "tools/Set-GuardianAutostart.ps1",
-      "sha256": "c7f8b5b30a3a32fef1b19fc4bccf2820b01e920bba6651453e214578cddf4dab",
-      "bytes": 10282
+      "sha256": "0592849b971f08e7fdc6813455235eedc386e1e1ce081b0507f32b6f54abe6b3",
+      "bytes": 10922
     },
     {
       "path": "tools/Verify-Release.ps1",

@@ -39,6 +39,20 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   `-Uninstall` und `-Install` neu angelegt werden.
 
 ### Behoben
+- **Der Statuscode-Lookup fand den laufenden Task nicht.** Die Korrektur auf
+  `[int64]` hatte den Ueberlauf behoben, aber die Schluessel `267008`,
+  `267009` und `267011` waren Int32-Literale, und `ContainsKey` vergleicht mit
+  `Object.Equals` - `Int32.Equals(Int64)` ist `false`. Am 04.10.2026 meldete
+  das Werkzeug fuer einen gesunden, laufenden Task wieder
+  `Der letzte Lauf war nicht erfolgreich, Ergebnis 267009 (0x00041301)`.
+  Derselbe Fehler also zum zweiten Mal, nur anders verursacht.
+  Verdeckt wurde er dadurch, dass die drei Schluessel ueber `Int32.MaxValue`
+  (`3221225786`, `2147750687`, `2147943645`) von selbst Int64 sind und
+  funktionierten - `0xC000013A` wurde korrekt benannt, `267009` nicht.
+  Beide Tabellen sind durch `-eq`-Vergleiche ersetzt, die numerisch
+  konvertieren und die Typfalle nicht haben.
+
+### Behoben
 - **Der Autostart-Bericht brach an grossen Ergebniswerten ab.**
   `tools/Set-GuardianAutostart.ps1` castete `LastTaskResult` auf `[int]`.
   Der Taskplaner liefert dort aber auch NTSTATUS-Werte, und am 04.10.2026 lag

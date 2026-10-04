@@ -146,31 +146,37 @@ if (-not $Install -and -not $Uninstall) {
     $ergebnis = [int64]$info.LastTaskResult
     $hex = '0x{0:X8}' -f $ergebnis
 
-    # Informationscodes des Taskplaners. Fuer einen Dauerlaeufer ist 0x41301
-    # der Sollzustand, kein Fehler.
-    $statuscode = @{
-        267008 = 'bereit, wartet auf den naechsten Lauf'
-        267009 = 'laeuft gerade'
-        267011 = 'ist noch nie gelaufen'
-    }
-    # Bekannte Fehlerschluessel, genannt statt nur als Zahl hingeworfen.
-    $fehlercode = @{
-        3221225786 = 'von aussen beendet - STRG+C, geschlossene Konsole oder beendeter Task'
-        2147750687 = 'eine Instanz dieses Tasks laeuft bereits'
-        2147943645 = 'Dienst nicht verfuegbar - laeuft der Task nur bei angemeldetem Nutzer?'
-        267014     = 'der Task wurde beendet'
-    }
-    if ($statuscode.ContainsKey($ergebnis)) {
+    # Vergleich mit -eq und nicht ueber eine Hashtabelle. ContainsKey prueft
+    # mit Object.Equals, und Int32.Equals(Int64) ist false. Genau das ist am
+    # 04.10.2026 passiert: Der Cast auf [int64] hatte den Ueberlauf behoben,
+    # aber 267008/267009/267011 sind Int32-Literale, und der Lookup fand den
+    # laufenden Task nicht mehr - 267009 wurde als Fehlschlag gemeldet, also
+    # derselbe Fehler noch einmal, nur anders herum. Die Schluessel ueber
+    # Int32.MaxValue (3221225786, 2147750687, 2147943645) sind von selbst Int64
+    # und funktionierten, was den Fehler verdeckt hat. -eq konvertiert
+    # numerisch und hat die Falle nicht.
+    $statustext = $null
+    if ($ergebnis -eq 267008) { $statustext = 'bereit, wartet auf den naechsten Lauf' }
+    elseif ($ergebnis -eq 267009) { $statustext = 'laeuft gerade' }
+    elseif ($ergebnis -eq 267011) { $statustext = 'ist noch nie gelaufen' }
+
+    $fehlertext = $null
+    if ($ergebnis -eq 3221225786) { $fehlertext = 'von aussen beendet - STRG+C, geschlossene Konsole oder beendeter Task' }
+    elseif ($ergebnis -eq 2147750687) { $fehlertext = 'eine Instanz dieses Tasks laeuft bereits' }
+    elseif ($ergebnis -eq 2147943645) { $fehlertext = 'Dienst nicht verfuegbar - laeuft der Task nur bei angemeldetem Nutzer?' }
+    elseif ($ergebnis -eq 267014) { $fehlertext = 'der Task wurde beendet' }
+
+    if ($null -ne $statustext) {
         Write-Host ''
-        Write-Host "Letztes Ergebnis ist ein Status und kein Fehler: $($statuscode[$ergebnis])."
+        Write-Host "Letztes Ergebnis ist ein Status und kein Fehler: $statustext."
         Write-Host 'Zustand pruefen mit:'
         Write-Host '  ./tools/Get-GuardianHealth.ps1'
         exit 0
     }
     if ($ergebnis -ne 0 -and $null -ne $info.LastRunTime) {
         Write-Host ''
-        if ($fehlercode.ContainsKey($ergebnis)) {
-            Write-Host "Der letzte Lauf schlug fehl ($hex): $($fehlercode[$ergebnis])." -ForegroundColor Yellow
+        if ($null -ne $fehlertext) {
+            Write-Host "Der letzte Lauf schlug fehl ($hex): $fehlertext." -ForegroundColor Yellow
         }
         else {
             Write-Host "Der letzte Lauf war nicht erfolgreich, Ergebnis $ergebnis ($hex)." -ForegroundColor Yellow
