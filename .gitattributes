@@ -12,6 +12,7 @@
 # "* text=auto eol=lf", damit Get-FileHash auf jedem System dieselben
 # Bytes sieht. CRLF wuerde die Hashes in KIT-HASHES.json instabil machen.
 *.cmd    text eol=lf
+# Fuer *.bat gilt die Regel in der .gitattributes an der Wurzel.
 *.iss    text eol=lf
 *.json   text eol=lf
 *.md     text eol=lf

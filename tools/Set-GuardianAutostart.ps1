@@ -79,8 +79,11 @@ if (-not (Test-Path -LiteralPath $ConfigPath -PathType Leaf)) {
 }
 
 # Interpreter waehlen wie WLAN-Guardian.cmd: pwsh, wenn vorhanden, sonst 5.1.
-$interpreter = 'powershell.exe'
-if (Get-Command pwsh.exe -ErrorAction SilentlyContinue) { $interpreter = 'pwsh.exe' }
+# Voller Pfad statt nacktem Name, siehe Install-Guardian.ps1: Der Task
+# Scheduler meldet sonst bei fehlendem System-PATH-Eintrag 0x80070002.
+$befehlPwsh = Get-Command pwsh.exe -ErrorAction SilentlyContinue
+if ($befehlPwsh) { $interpreter = $befehlPwsh.Source }
+else { $interpreter = (Get-Command powershell.exe).Source }
 # -WindowStyle Hidden. Der Task laeuft ohne gespeichertes Kennwort und damit
 # in der interaktiven Sitzung; pwsh.exe ist ein Konsolenprogramm und legt ein
 # sichtbares Fenster an. Am 04.10.2026 endete der Guardian mit 0xC000013A
@@ -122,8 +125,32 @@ if (-not $Install -and -not $Uninstall) {
     Write-Host "Letztes Ergebnis: $($info.LastTaskResult)"
     Write-Host "Naechster Lauf  : $($info.NextRunTime)"
     Write-Host ''
-    Write-Host "Startet         : $interpreter"
-    Write-Host "Argumente       : $argumente"
+    # Der Bericht zeigt, was der Task WIRKLICH startet, und nicht, was diese
+    # Kopie des Skripts anlegen wuerde. Beides ist nur im Zielverzeichnis
+    # dasselbe. Laeuft das Skript aus einem Klon - im Deploy immer - dann
+    # waeren $interpreter und $argumente die Pfade des Klons, neben Status und
+    # letztem Ergebnis des echten Tasks. Am 04.10.2026 stand genau das im
+    # Deploy-Protokoll und las sich, als sei der Autostart auf einen
+    # Wegwerf-Ordner verbogen. War er nicht: Ohne -Install wird hier gar nicht
+    # registriert, der Bericht hat nur die falsche Quelle gezeigt.
+    $aktionRegistriert = @($vorhanden[0].Actions)
+    if ($aktionRegistriert.Count -gt 0) {
+        $startetText = $aktionRegistriert[0].Execute
+        $argumenteText = $aktionRegistriert[0].Arguments
+        $arbeitText = $aktionRegistriert[0].WorkingDirectory
+    }
+    else {
+        $startetText = $interpreter
+        $argumenteText = $argumente
+        $arbeitText = $root
+    }
+    if ([string]::IsNullOrWhiteSpace($argumenteText)) { $argumenteText = '(keine)' }
+    if ([string]::IsNullOrWhiteSpace($arbeitText)) { $arbeitText = '(nicht gesetzt)' }
+    Write-Host "Startet         : $startetText"
+    Write-Host "Argumente       : $argumenteText"
+    # Das Arbeitsverzeichnis entscheidet, wohin der Daemon schreibt: Ein
+    # relatives logDirectory wird gegen Get-Location aufgeloest.
+    Write-Host "Arbeitsverzeichnis: $arbeitText"
     # 0x413xx sind Statuscodes des Taskplaners, keine Fehlschlaege:
     #   0x41300  bereit, wartet auf den naechsten Lauf
     #   0x41301  laeuft gerade

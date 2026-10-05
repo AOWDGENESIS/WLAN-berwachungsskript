@@ -4,8 +4,8 @@
   "files": [
     {
       "path": ".gitattributes",
-      "sha256": "0a97118734020466fb27d325a68e50c628448db3a4ece80047ea8e352ad92bf3",
-      "bytes": 773
+      "sha256": "9ba99ea0f03a0cfac5da67dfe1e8ef2d020e94e140dccbec6fc452cb17251fa0",
+      "bytes": 838
     },
     {
       "path": ".github/CODEOWNERS",
@@ -24,8 +24,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "105d19fa9e570013064fa7e3dd0e398684731db89b0aaa3f5038b02cf9187479",
-      "bytes": 20936
+      "sha256": "049f59a255418ade86dbd5ef58f27ee0013cb9d25f36daa7611927a01dc0616b",
+      "bytes": 29790
     },
     {
       "path": "CONTRIBUTING.md",
@@ -114,8 +114,8 @@
     },
     {
       "path": "docs/GUARDIAN-UI.md",
-      "sha256": "39bb409085bc0b39aa6bf33059313d33e6f8b8c3baa5075864438cd1c9f6215c",
-      "bytes": 754
+      "sha256": "2a922fa5171a330f3531b7236b28713813062ece080410194aac9a597f061017",
+      "bytes": 2398
     },
     {
       "path": "docs/INSTALL-FLOW.md",
@@ -219,13 +219,13 @@
     },
     {
       "path": "src/Guardian.Tray/Guardian.Tray.ps1",
-      "sha256": "df02876819c000a5bcbbc0ac4d06b82d8f9a03ace6614471deab3c824c12d0e0",
-      "bytes": 2292
+      "sha256": "9e86893fa4f72d42fd621444862402386937c12bcdbb9177a67bad2aa5b5772e",
+      "bytes": 12254
     },
     {
       "path": "src/Guardian.UI/Guardian.UI.ps1",
-      "sha256": "551508f62cbcc831d147a99c748a43dc1dbf0423dd9b918fd273321fcd9ccad7",
-      "bytes": 2268
+      "sha256": "68a2cac1fa6d6cd0c2c07f04d955900f282f7c8060de41dc9849c051c5c0cf83",
+      "bytes": 16977
     },
     {
       "path": "src/Guardian.ps1",
@@ -234,8 +234,8 @@
     },
     {
       "path": "tests/Release-Gate.ps1",
-      "sha256": "29dfcd3cb7e024da67f95cd51025a769be7ca2f89e64c6714e7de518d90226a8",
-      "bytes": 1443
+      "sha256": "5d66baa42d6ea1b6e067d570ffa99c346920abcbe978717bfa3fd6b447f85845",
+      "bytes": 1613
     },
     {
       "path": "tests/Verify-Chain.ps1",
@@ -263,6 +263,11 @@
       "bytes": 760
     },
     {
+      "path": "tools/Install-Guardian.ps1",
+      "sha256": "7a0545c6198eb28e8948ea24ed4cf196db80c57fae3ea522e63c49f40c420d06",
+      "bytes": 28028
+    },
+    {
       "path": "tools/New-KitHashes.ps1",
       "sha256": "a5ade712a4301d66713da20b82513244ed4b52abd2d377c222663e415a91e55d",
       "bytes": 3415
@@ -274,8 +279,13 @@
     },
     {
       "path": "tools/Set-GuardianAutostart.ps1",
-      "sha256": "0592849b971f08e7fdc6813455235eedc386e1e1ce081b0507f32b6f54abe6b3",
-      "bytes": 10922
+      "sha256": "2b5e6c2d913cbbb33703afc59a68fd3418c1658f20c6acc8d21cc58add154dd0",
+      "bytes": 12468
+    },
+    {
+      "path": "tools/Start-Guardian-Menue.ps1",
+      "sha256": "55a966faed4c2d335a23bfe4d1c53dbbf1fa58dbcfcda5a0df68ed043afc39ee",
+      "bytes": 15938
     },
     {
       "path": "tools/Verify-Release.ps1",

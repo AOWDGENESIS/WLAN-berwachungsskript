@@ -8,7 +8,10 @@ $checks = @(
     (Join-Path $root "src\Guardian.ps1"),
     (Join-Path $root "src\Guardian-Devices.ps1"),
     (Join-Path $root "config\guardian.example.json"),
-    (Join-Path $root "installer\WLAN-Guardian.iss")
+    (Join-Path $root "installer\WLAN-Guardian.iss"),
+    (Join-Path $root "tools\Install-Guardian.ps1"),
+    (Join-Path $root "src\Guardian.UI\Guardian.UI.ps1"),
+    (Join-Path $root "src\Guardian.Tray\Guardian.Tray.ps1")
 )
 foreach ($path in $checks) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing: $path" }

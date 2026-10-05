@@ -5,6 +5,143 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
 
 ## [1.1.0] - 2026-10-02
 
+### Behoben
+- **"Starten fehlgeschlagen: Das System kann die angegebene Datei nicht
+  finden" beim Knopf "Daemon starten", waehrend der Daemon laengst lief.**
+  Oberflaeche und Tray riefen `Start-ScheduledTask` ohne Vorabpruefung. Beide
+  pruefen jetzt zuerst die Ein-Instanz-Sperre (`Test-DaemonLaeuft`) und melden
+  "Der Daemon laeuft bereits" statt eines Fehlerdialogs; die Fehlermeldung
+  nennt jetzt den Task-Namen. Beobachtet am 05.10.2026 im ersten erfolgreichen
+  echten Lauf.
+- **Autostart-Tasks trugen nackte Interpreternamen.** `pwsh.exe` statt des
+  vollen Pfades: Der Task Scheduler loest nackte Namen zur Laufzeit ueber den
+  System-PATH auf und meldet 0x80070002, wenn der Eintrag dort fehlt - in der
+  Konsole funktioniert derselbe Aufruf (PowerShell#5919). Installer und
+  `Set-GuardianAutostart.ps1` schreiben jetzt `(Get-Command ...).Source` in
+  die Task-Aktion.
+
+- **Die Installation sah beim Schritt "Installationsordner" aus wie ein
+  Haenger.** Der Ordnerdialog wurde im erhoehten Kindprozess geoeffnet und
+  gehoert keinem Fenster. Er konnte hinter der Konsole liegen, und im Fenster
+  stand zuletzt nur `[1/8] Bestimme den Installationsordner ...` - genau dort
+  blieb der echte Lauf am 05.10.2026 stehen. Die Abfrage laeuft jetzt im nicht
+  erhoehten Prozess, also in dem Fenster, das der Nutzer sieht, und damit vor
+  der UAC-Abfrage. Vorher sagt der Installer, dass ein Fenster kommt und dass
+  ein Klick auf die Taskleiste hilft, wenn es verdeckt ist.
+- **Kein Ausweg, wenn der Ordnerdialog nicht bedient werden kann.** Bricht er
+  ab oder laeuft er gar nicht erst, fragte der Installer nichts weiter und
+  beendete sich. Jetzt folgt eine Eingabezeile: Pfad eintippen oder Enter fuer
+  den vorgeschlagenen Ordner unter dem Benutzerprofil. Mitkopierte
+  Anfuehrungszeichen werden abgetrennt, und Ziel gleich Quellordner wird
+  weiterhin abgelehnt, bevor etwas geloescht wird.
+
+- **Ein Fehlschlag der Installation wurde als Erfolg gemeldet.**
+  `tools/Install-Guardian.ps1` startet den erhoehten Lauf mit
+  `Start-Process -Verb RunAs -Wait`, und `-Wait` gibt den Exit-Code des Kindes
+  nicht zurueck. Danach stand ein bedingungsloses `exit 0`. Damit gingen der
+  abgebrochene Ordnerdialog, ein fehlgeschlagener Wiederherstellungspunkt und
+  jeder geworfene Fehler als Erfolg durch, und `WLAN-Guardian-Start.bat`
+  meldete "durchgelaufen, Exit-Code 0", waehrend gar nichts installiert war.
+  Das Kind schreibt jetzt eine Erfolgsmeldung, und zwar nur an seinen beiden
+  erfolgreichen Enden; fehlt sie, geht der Elternprozess mit `exit 1` heraus.
+- **Dasselbe eine Ebene hoeher.** `tools/Start-Guardian-Menue.ps1` rief den
+  Installer mit `&` auf und endete unbedingt mit `exit 0`. Ein mit `&`
+  aufgerufenes Skript beendet den Aufrufer nicht, also war auch dort jeder
+  Fehlschlag unsichtbar. `$global:LASTEXITCODE` wird jetzt vor dem Aufruf auf 0
+  gesetzt und danach ausgewertet - dieselbe Reihenfolge wie in `Test-All.ps1` -
+  und das Menue beendet sich mit dem uebernommenen Code.
+
+### Behoben
+- **Vier Stellen suchten den Daemon nur unter `pwsh.exe`.** Oberflaeche,
+  Tray, Installer und Menue filterten
+  `Get-CimInstance Win32_Process -Filter "Name='pwsh.exe'"`, waehrend
+  `tools/Install-Guardian.ps1` und `tools/Set-GuardianAutostart.ps1`
+  ausdruecklich `powershell.exe` in den Autostart eintragen, wenn `pwsh.exe`
+  nicht im PATH ist. Auf einem Rechner ohne PowerShell 7 im PATH haette
+  "Daemon stoppen" aus dem Menue still nichts getan, und der Installer haette
+  den alten Prozess nicht beendet, bevor er dessen Ordner loescht. Der Filter
+  lautet jetzt `Name='pwsh.exe' OR Name='powershell.exe'`; die Bindung an
+  `Start-Guardian.ps1` beziehungsweise `Guardian.Tray.ps1` in der
+  Befehlszeile bleibt, damit weiterhin keine fremde Konsole beendet wird.
+
+### Hinzugefuegt
+- **Installationspaket zum Doppelklick.**
+  `WLAN-Guardian-Installation-1.1.0.zip` legt `WLAN-Guardian-Start.bat` und
+  `LIESMICH-INSTALLATION.txt` an die Archivwurzel und `Projekt/` direkt
+  daneben, ohne Versionsordner. Die Batchdatei sucht `pwsh.exe`, faellt auf
+  `powershell.exe` zurueck und startet `tools/Start-Guardian-Menue.ps1`; die
+  Logik steht dort, weil sie sich in PowerShell pruefen laesst und in Batch
+  nicht. CRLF, weil `cmd.exe` mit LF-only bei mehrzeiligen Klammerbloecken
+  durcheinanderkommt - `.gitattributes` setzt dafuer `*.bat text eol=crlf`.
+- **Menue und Dauerueberwachung.** `tools/Start-Guardian-Menue.ps1` bietet
+  installieren, Zustand pruefen, ueberwachen, Daemon starten und stoppen,
+  Oberflaeche oeffnen, letzte Ereignisse anzeigen und deinstallieren - als
+  Menue nach einem Doppelklick und als Einzelaufruf, also
+  `WLAN-Guardian-Start.bat ueberwachen`. Die Ueberwachung schreibt alle
+  30 Sekunden eine Zeile mit Zeit, Status, SSID, IPv4, Internet,
+  Daemon-Zustand, Loggroesse und Ereigniszahl, und endet auf Q.
+  `KeyAvailable` ist in try/catch, weil es bei umgelenkter Eingabe wirft.
+- **Notiz zum Installationspfad.** Der Installer schreibt
+  `%LOCALAPPDATA%\WLAN-Guardian\install-pfad.txt`, die Deinstallation
+  entfernt sie. Der Zielordner wird frei gewaehlt; ohne die Notiz wuesste
+  die Batchdatei nach einem Doppelklick nicht, welche Installation sie
+  ueberwachen soll.
+
+### Hinzugefuegt
+- **Installationsprogramm mit freiem Pfad.** `tools/Install-Guardian.ps1`
+  fordert Administratorrechte an, legt einen Windows-Wiederherstellungspunkt
+  an, sichert `artifacts` und `config` der alten Installation als ZIP in die
+  Dokumente, beendet den alten Daemon, entfernt den alten Autostart, loescht
+  den alten Ordner, fragt den Zielordner ab, kopiert, richtet den Autostart
+  ein, startet und prueft. Ohne `-InstallDir` oeffnet sich ein Ordnerdialog.
+  `-Deinstallieren` macht nur die ersten fuenf Schritte.
+  `Checkpoint-Computer` braucht Erhoehung, deshalb die UAC-Abfrage; Daemon und
+  Tray laufen weiter mit `-RunLevel Limited`. Schlaegt der
+  Wiederherstellungspunkt fehl, bricht der Installer ab, bevor er etwas
+  veraendert - ausser mit `-KeinWiederherstellungspunkt`.
+- **Echte Oberflaeche.** `src/Guardian.UI/Guardian.UI.ps1` zeigt Status, SSID,
+  Adapter, IPv4, Gateway, DNS und Internet, dazu ob der Daemon laeuft, wie
+  gross das Log ist und wann das letzte Ereignis kam, sowie die letzten 60
+  Ereignisse als Tabelle. Aus dem Fenster heraus laesst sich der Daemon
+  starten und stoppen und der Log-Ordner oeffnen. Die Oberflaeche liest nur
+  und haelt keine Sperre, sie laeuft also neben dem Daemon.
+- **Tray-Symbol.** `src/Guardian.Tray/Guardian.Tray.ps1` legt ein Symbol in
+  den Infobereich, gruen bei ONLINE, rot bei OFFLINE, orange bei unbekannt,
+  mit Doppelklick auf die Oberflaeche und Start/Stopp im Kontextmenue. Eine
+  eigene Sperre verhindert mehrere Symbole, und die drei Icons werden einmal
+  gebaut statt alle fuenf Sekunden, weil `Icon.FromHandle` einen nativen
+  Handle traegt.
+
+### Behoben
+- **Die Oberflaeche war ein Platzhalter und erschien nie.**
+  `src/Guardian.UI/Guardian.UI.ps1` rief kein `ShowDialog()` auf: Nach
+  `$timer.Start()` endete das Skript, das Fenster war nie sichtbar. Ausserdem
+  las es `$obj.GuardianState`, das Ereignis traegt das Feld aber als `status` -
+  selbst mit sichtbarem Fenster waere der Status leer geblieben. Und es
+  hardkodierte `artifacts` statt das `logDirectory` aus der Config zu lesen.
+  Alle drei Punkte sind behoben. Felder werden ueber `PSObject.Properties`
+  gelesen, denn unter `Set-StrictMode -Version Latest` wirft der Zugriff auf
+  eine nicht vorhandene Eigenschaft eines `PSCustomObject`, und nicht jede
+  aeltere Logzeile traegt jedes Feld.
+- **`src/Guardian.Tray/` enthielt eine Schleife, die nie lief.** Der Inhalt
+  war als "NOCH NICHT VERDRAHTET" gekennzeichnet, wurde von niemandem
+  aufgerufen und kam bis Commit 4829fc4 wegen eines zu flachen `$root` nie
+  ueber die `Import-Module`-Zeilen hinaus. Der Ordner heisst jetzt, was er
+  enthaelt. Der laufende Pfad bleibt `src/Guardian.ps1`.
+
+### Behoben
+- **Der Autostart-Bericht nannte die falsche Quelle.** Ohne `-Install` und
+  `-Uninstall` schreibt `tools/Set-GuardianAutostart.ps1` nichts, es
+  berichtet nur - `Register-ScheduledTask` ist allein ueber `-Install`
+  erreichbar. Der Bericht zeigte unter `Startet` und `Argumente` aber die
+  Pfade, die diese Kopie des Skripts anlegen wuerde, also im Deploy die des
+  Wegwerf-Klons, direkt neben Status und letztem Ergebnis des echten Tasks.
+  Im Protokoll vom 04.10.2026 las sich das, als sei der Autostart auf
+  `C:\Users\aowdg\WLAN-Deploy7\arbeit\ziel` verbogen. War er nicht.
+  Jetzt werden `Execute`, `Arguments` und `WorkingDirectory` aus dem
+  registrierten Task gelesen, und das Arbeitsverzeichnis steht mit dabei,
+  weil es entscheidet, wohin der Daemon schreibt.
+
 ### Geaendert
 - **Die Ein-Instanz-Sperre haengt am Log statt am Programm.** Der Name ist
   jetzt `WLAN-Guardian-Einziger-Lauf-` plus die ersten 16 Zeichen der SHA-256
@@ -123,9 +260,11 @@ Versionierung nach [Semantic Versioning](https://semver.org/lang/de/).
   `Prozess PASS` und zwei abgewiesene Testlaeufe.
 - **Ein relatives `logDirectory` wird unterschiedlich aufgeloest.** Der Kern
   nimmt `Get-Location`, `tools/Get-GuardianHealth.ps1` nimmt den Skriptordner.
-  Beim Task stimmen beide, weil `-WorkingDirectory` auf die Wurzel gesetzt ist.
-  Bei einem manuellen Start aus einem anderen Ordner nicht - dann prueft die
-  Gesundheitspruefung ein anderes Log als das, in das geschrieben wird.
+  Der Installer schreibt deshalb einen absoluten Pfad in `config/guardian.json`,
+  und damit ist der Unterschied weg. Offen bleibt er fuer die mitgelieferte
+  `config/guardian.example.json`, die weiterhin `artifacts` enthaelt: Wer den
+  Kern von Hand aus einem beliebigen Ordner startet, prueft mit der
+  Gesundheitspruefung ein anderes Log, als beschrieben wird.
 
 ### Hinzugefuegt
 - **Siebter Testschritt `Rotation`.** Die Log-Rotation war bisher nur statisch
